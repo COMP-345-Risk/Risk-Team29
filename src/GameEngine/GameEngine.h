@@ -4,6 +4,10 @@
 #include <time.h>
 #include <iostream>
 
+#include "../Map/Map.h"
+
+class Player;
+
 using namespace std;
 
 /************************************************************ State **************************************************************/
@@ -49,7 +53,7 @@ public:
  * Default Constructor
  */
 	Transition();
-/**S
+/**
  * Destructor
  */
     ~Transition();
@@ -68,16 +72,49 @@ public:
 /**
  * overide Stream insertion operator
  */
-    friend ostream& operator<<(ostream& out, Transition* t);
+friend ostream& operator<<(ostream& out, Transition* t);
 
-    string getCommand();
+string getCommand();
 
-    State * getNextState();
+State * getNextState();
 
 private:
     string command;
     State* nextState;
 };
+
+/************************************************************ Game Engine **************************************************************/
+class GameEngine {
+public:
+    GameEngine();
+  
+    GameEngine(Map *map, vector<Player*> players);
+    
+    ~GameEngine();
+
+    Map* getMap();
+
+    vector<Player*> getPlayers();
+
+    void mainGameLoop();
+
+    void reinforcementPhase();
+
+    void issueOrdersPhase();
+
+    void executeOrdersPhase();
+
+
+private:
+    vector<State*> gameStates;
+    vector<Transition*> gameTransitions;
+    Map *map;
+    vector<Player*> players;
+    friend ostream& operator<<(ostream& out, GameEngine* ge);  // overide Stream insertion operator
+};
+
+
+/************************************************************ GameEngineDriver **************************************************************/
 /**
  * This method initializes the game states and then stores them in a Vector
  */
@@ -86,5 +123,9 @@ private:
  * This method initializes the game transitions and then stores them in a Vector
  */
     vector<Transition*> initializeGameTransitions();
+
+
 /************************************************************ GameEngineDriver **************************************************************/
-void testGameStates();
+void testGameStates(); //A1
+
+void testMainGameLoop(); //A2

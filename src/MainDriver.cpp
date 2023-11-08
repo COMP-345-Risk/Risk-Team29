@@ -19,8 +19,8 @@ int main()
      /*
     * Assignment 2
     */
-    // testOrderExecution();
-    testLoggingObserver();
-
+    //testOrderExecution();
+    //testLoggingObserver();
+    testMainGameLoop();
     return 0;
 }
