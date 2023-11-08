@@ -1,0 +1,7 @@
+loadmap file1
+loadmap ../Map/MapFolder/Africa.map
+validatemap
+addplayer lara
+addplayer eyal
+gamestart
+quit

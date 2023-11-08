@@ -2,6 +2,8 @@
 #include "../OrdersList/Orders.h"
 #include "../Player/Player.h"
 #include "../CardsDeck/Cards.h"
+#include "../CommandProcessing/CommandProcessing.h"
+
 
 /************************************************************ LoggingDriver ************************************************************/
 
@@ -61,6 +63,16 @@ void testLoggingObserver() {
     o->attach(logger);
     p->issueOrder(d); // should call Order::addOrder and notify the observer
 
+    // test the save command 
+    CommandProcessor * processor = new CommandProcessor();
+    processor->attach(logger);
+    Command* c = processor->getCommand();
+
+    // test command effect
+    c->attach(logger);
+    c->saveEffect("new effect");
+
+
     // avoid dangeling pointers
     for (int i = 0; i < numberOfOrders; i++) {
         Order* order = orderArray[i];
@@ -80,21 +92,30 @@ void testLoggingObserver() {
     delete p2; // will delete all items that were passed to players constructor such as territories, hand, orderlist and state
     p2 = NULL;
 
+
+    delete c;
+    c = NULL;
+    
+    // TODO: delete command and processor
+    // delete processor;
+    // processor = NULL;
+
+
     delete logger;
     logger = NULL;
 
 }
 
 // TODO: when merged - call `notify(this)` inside of each of those methods 
-// CommandProcessor::saveCommand() - TODO
-// Command::saveEffect() - TODO 
+// CommandProcessor::saveCommand() - DONE
 // Order::execute() --> DONE
 // OrderList::addOrder() --> DONE
+// Command::saveEffect() - DONE  - but effect doesnt print 
 // GameEngine::transition() - TODO
 
 //todo: When merged - Extend the following Classes from Subject, public ILoggable and override the stringToLogMethod
 // Order - DONE 
 // OrderList -DONE
+// CommandProcessor - DONE
+// Command - DONE
 // GameEngine 
-// Command
-// CommandProcessor

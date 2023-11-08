@@ -3,6 +3,7 @@
 #include <vector>
 #include <time.h>
 #include <iostream>
+#include <map>
 
 #include "../Map/Map.h"
 
@@ -129,3 +130,9 @@ private:
 void testGameStates(); //A1
 
 void testMainGameLoop(); //A2
+void testGameStates();
+
+
+
+// todo class declaration
+map <string, Transition*> initializeGameTransitionsV2();
