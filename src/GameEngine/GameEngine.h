@@ -3,6 +3,7 @@
 #include <vector>
 #include <time.h>
 #include <iostream>
+#include <map>
 
 using namespace std;
 
@@ -88,3 +89,8 @@ private:
     vector<Transition*> initializeGameTransitions();
 /************************************************************ GameEngineDriver **************************************************************/
 void testGameStates();
+
+
+
+// todo class declaration
+map <string, Transition*> initializeGameTransitionsV2();

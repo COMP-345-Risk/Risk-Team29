@@ -153,3 +153,26 @@ Transition::Transition(string requiredCommand, State* finalState){
 
         return gameTransitions;
     }
+
+    // loadmap and transition will store the next state for loadmap i.e: `maploaded`
+    // todo: EYAL THIS IS TEMP, THIS SHOULD BE IN THE GAMEENGINE PARAMS, I WILL ADD IT SOON
+    map<string, Transition*> initializeGameTransitionsV2(){
+        vector<State*> states = initializeGameStates();
+        map<string, Transition*> transitions;
+
+        transitions["start"] = new Transition("loadmap", states[1]); 
+        transitions["loadmap"] = new Transition("loadmap", states[1]); 
+        transitions["validate"] = new Transition("validate", states[1]);
+        transitions["addplayer"] = new Transition("addplayer", states[3]);
+        transitions["assigncountries"] = new Transition("assigncountries", states[4]);
+        transitions["issueorder"] = new Transition("issueorder", states[5]);
+        transitions["endissueorders"] = new Transition("endissueorders", states[6]);
+        transitions["execorder"] = new Transition("execorder", states[6]);
+        transitions["endexecorders"] = new Transition( "endexecorders", states[4]);
+        // todo, win should be replay or quit
+        transitions["win"] = new Transition("win", states[7]);
+        transitions["play"] = new Transition("play", states[0]);
+        transitions["end"] = new Transition( "end", states[8]);
+
+        return transitions;
+    }
