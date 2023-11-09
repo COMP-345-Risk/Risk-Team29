@@ -99,7 +99,7 @@ GameEngine::GameEngine(){ }
 
 GameEngine::GameEngine(Map *map, vector<Player*> players){
     this->gameStates = initializeGameStates();
-    this->gameTransitions = initializeGameTransitions();
+    this->gameTransitions = initializeGameTransitionsV2();
     this->map = map;
     this->players = players;
 }

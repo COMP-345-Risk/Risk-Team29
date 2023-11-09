@@ -131,7 +131,7 @@ void testMainGameLoop(){
     map1->validate();
 
 
-    cout << "\n\n---------> Create Player 1 <---------\n\n\n";
+    cout << "\n\n---------> Create Players vector 2 players <---------\n\n\n";
 
     vector<Territory*> t1;
     Hand* h1 = new Hand();
@@ -139,15 +139,9 @@ void testMainGameLoop(){
 
     cout << "...Creating state executeorders (must be in this state to execute orders)...\n";
     State* pState1 = new State("executeorders");
-    cout << "Created state executeorders.\n\n";
 
     cout << "...Creating player 1 with t adjeceny list, Hand, and order list..\n";
     Player* p1 = new Player(t1, h1, pOL1, 1, pState1); // 1 is id
-    cout << "Created player.\n\n";
-
-    cout << p1;
-
-    cout << "\n\n---------> Create Player 2 <---------\n\n\n";
 
     vector<Territory*> t2;
     Hand* h2 = new Hand();
@@ -155,13 +149,18 @@ void testMainGameLoop(){
 
     cout << "...Creating state executeorders (must be in this state to execute orders)...\n";
     State* pState2 = new State("executeorders");
-    cout << "Created state executeorders.\n\n";
 
     cout << "...Creating player 1 with t adjeceny list, Hand, and order list..\n";
     Player* p2 = new Player(t2, h2, pOL2, 1, pState2); // 1 is id
-    cout << "Created player.\n\n";
 
-    cout << p2;
+    cout << "...Creating player 1 with t adjeceny list, Hand, and order list..\n";
+    vector<Player*> players;
+    players.push_back(p1);
+    players.push_back(p2);
+\
+    cout << "\n\n---------> Create Game Engine <---------\n\n\n";
+
+    GameEngine *ge = new GameEngine(map1, players);
 
 
 

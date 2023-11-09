@@ -108,7 +108,7 @@ public:
 
 private:
     vector<State*> gameStates;
-    vector<Transition*> gameTransitions;
+    map <string,Transition*> gameTransitions;
     Map *map;
     vector<Player*> players;
     friend ostream& operator<<(ostream& out, GameEngine* ge);  // overide Stream insertion operator
@@ -130,9 +130,6 @@ private:
 void testGameStates(); //A1
 
 void testMainGameLoop(); //A2
-void testGameStates();
-
-
 
 // todo class declaration
 map <string, Transition*> initializeGameTransitionsV2();

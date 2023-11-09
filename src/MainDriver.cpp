@@ -19,11 +19,12 @@ int main(int argc, char* argv[])
      /*
     * Assignment 2
     */
-    // testOrderExecution();
+    //testOrderExecution();
+    testMainGameLoop();
     // argv[0] is the name of the program hence the second param will be what we need (flag)
-    string flag = argv[1];
-    bool isCommandLine = flag.compare("-console") == 0;
-    testCommandProcessor(isCommandLine, argc == 3 ? argv[2] : "");
-    testLoggingObserver();
+    // string flag = argv[1];
+    // bool isCommandLine = flag.compare("-console") == 0;
+    // testCommandProcessor(isCommandLine, argc == 3 ? argv[2] : "");
+    // testLoggingObserver();
     return 0;
 }
