@@ -157,10 +157,24 @@ void testMainGameLoop(){
     vector<Player*> players;
     players.push_back(p1);
     players.push_back(p2);
-\
+
     cout << "\n\n---------> Create Game Engine <---------\n\n\n";
 
+    cout << "...Creating Game Engine with two players ..\n";
+
     GameEngine *ge = new GameEngine(map1, players);
+
+    cout << ge->getGameStates().at(0);
+
+    cout << ge->getGameTransitions()["start"]["loadmap"];
+    
+    // cout <<ge;
+
+    ge->mainGameLoop();
+
+
+
+    
 
 
 

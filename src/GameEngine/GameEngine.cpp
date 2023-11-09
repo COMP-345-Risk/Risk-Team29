@@ -34,10 +34,11 @@
  * overide Stream insertion operator
  */
     ostream& operator<<(ostream& out, State* s){
-        cout << "You are in " << s->stateName << "\n";
+        
+        out << "State: " << (s->stateName) << "\n";
         return out;
-
     }
+
     string State::getStateName(){
         return stateName;
     }
@@ -81,6 +82,10 @@ Transition::Transition(string requiredCommand, State* finalState){
  * overide Stream insertion operator
  */
     ostream& operator<<(ostream& out, Transition* t){
+        out << "Tramsition | command: " << t->command 
+            << " | next" << t->nextState <<"\n";
+        return out;
+
         cout << "The " << t->command << " leads to the next state of : " << t->nextState << "\n";
         return out;
 
@@ -99,10 +104,19 @@ GameEngine::GameEngine(){ }
 
 GameEngine::GameEngine(Map *map, vector<Player*> players){
     this->gameStates = initializeGameStates();
+    this->currentState = getGameStates().at(0);
     this->gameTransitions = initializeGameTransitionsV2();
     this->map = map;
     this->players = players;
 }
+
+vector<State*> GameEngine::getGameStates(){return gameStates;}
+
+State* GameEngine::getCurrentState() { return currentState; }
+
+void GameEngine::setCurrentState(State* s){this->currentState = s;}
+
+map<string, map <string, Transition*> > GameEngine::getGameTransitions(){return gameTransitions;}
 
 Map* GameEngine::getMap(){ return this->map; }
 
@@ -110,16 +124,89 @@ vector<Player*> GameEngine::getPlayers() { return this->players; }
 
 GameEngine::~GameEngine(){}
 
+/**
+ * @brief Contains reinforcementPhase(), issueOrdersPhase() and executeOrdersPhase()
+ * 
+ * Currently the Game loop is designed to execute each phase 2 times in a loop. 
+ *
+ */
+void GameEngine::mainGameLoop(){
+    
+    string inputCommand = "assignreinforcement";
+    string previousStateName = "playersadded";
+    int count = 0;
+    while(inputCommand.compare("win")!=0 && count < 6){
+        
+        //TODO: Tried using map "gameTransitions", could not figure it out, will try again in future
+        if ( (previousStateName.compare("playersadded") == 0 && inputCommand.compare("assignreinforcement") == 0)
+            || (previousStateName.compare("executeorders") == 0 && inputCommand.compare("issueorders") == 0)) {
+            previousStateName = getGameStates().at(4)->getStateName(); // assignreinforcement
+            reinforcementPhase();
+            inputCommand = "issueorder";
+            
+        }
+        else if ((previousStateName.compare("assignreinforcement") == 0 && inputCommand.compare("issueorder") == 0)
+            || (previousStateName.compare("issueorders") == 0 && inputCommand.compare("issueorder") == 0)) {
+            previousStateName = getGameStates().at(5)->getStateName(); // issueorders
+            issueOrdersPhase();
+            inputCommand = "issueordersend";
+
+        }
+        else if ((previousStateName.compare("issueorders") == 0 && inputCommand.compare("issueordersend") == 0)
+            || (previousStateName.compare("executeorders") == 0 && inputCommand.compare("execorder") == 0)) {
+            previousStateName = getGameStates().at(6)->getStateName(); // executeorders
+            executeOrdersPhase(); 
+            inputCommand = "issueorders";
+        }
+        else {
+            cout << "Invalid choice.\n" ;
+        }
+        count++;
+    }
+}
+
+/**
+    * @brief Players given  number  of  army  units (#  of  territories  owned  divided  by  3,  rounded  down)
+    * If player owns all territories in continent they get a control bonus. Each player gets a minumum of 3 army per turn.
+    *
+    */
+void GameEngine::reinforcementPhase() {
+    cout << "Hi from GameEnginereinforcementPhase\n";
+    
+
+}
+
+void GameEngine::issueOrdersPhase(){
+    cout << "Hi from issueOrdersPhase\n";
+}
+
+void GameEngine::executeOrdersPhase() {
+    cout << "Hi from executeOrdersPhase\n";
+}
 
 ostream& operator << (ostream& out, GameEngine* ge)
 {
 
-    out << "********** Printing Players **********";
+    out << "********** Printing current state **********\n"
+        << ge->getCurrentState();
+
+    out << "********** Printing game states **********\n";
+        int count =0;
+        for(auto s: ge->getGameStates()){
+            out << count++ << " "<< s;
+        }
+    out << "********** Printing Transitions **********\n";
+    for (const auto& pair1 : ge->getGameTransitions()) {
+        for (const auto& pair2 : pair1.second ) {
+                out << "previousState: " <<pair1.first<<" | " << pair2.second;
+        }
+    }        
+    out << "********** Printing Players **********\n";
     for(auto p : ge->getPlayers()){
         out << p;
     }
-    out << "********** Printing Map **********"
-        << ge->getMap();
+    out << "********** Printing Map **********\n";
+        ge->getMap()->printMapSummary();
 
     return out;
 }
@@ -197,9 +284,9 @@ ostream& operator << (ostream& out, GameEngine* ge)
 
     // loadmap and transition will store the next state for loadmap i.e: `maploaded`
     // todo: EYAL THIS IS TEMP, THIS SHOULD BE IN THE GAMEENGINE PARAMS, I WILL ADD IT SOON
-    map<string, map<string, Transition*>> initializeGameTransitionsV2(){
+    map<string, map<string, Transition*> > initializeGameTransitionsV2(){
         vector<State*> states = initializeGameStates();
-        map<string, map<string, Transition*>> transitions;
+        map<string, map<string, Transition*> > transitions;
 
         transitions["start"]["loadmap"] = new Transition("loadmap", states[1]); // maploaded
         transitions["maploaded"]["loadmap"] = new Transition("loadmap", states[1]); // maploaded
@@ -215,7 +302,6 @@ ostream& operator << (ostream& out, GameEngine* ge)
         transitions["executeorders"]["win"] = new Transition("win", states[7]); // win
         transitions["win"]["quit"] = new Transition("quit", states[8]); // end
         transitions["win"]["replay"] = new Transition("replay", states[0]); // start
-
 
         return transitions;
     }
