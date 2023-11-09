@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[])
 {
-    /* 
+    /*
     * Assignment 1
     */
     //testLoadMaps();
@@ -16,15 +16,18 @@ int main(int argc, char* argv[])
     //testCards();
     // testGameStates(); 
 
-     /*
+    /*
     * Assignment 2
     */
     //testOrderExecution();
     testMainGameLoop();
     // argv[0] is the name of the program hence the second param will be what we need (flag)
-    // string flag = argv[1];
-    // bool isCommandLine = flag.compare("-console") == 0;
-    // testCommandProcessor(isCommandLine, argc == 3 ? argv[2] : "");
+    // if (argc > 1) {
+    //     string flag = argv[1];
+    //     bool isCommandLine = flag.compare("-console") == 0;
+    //     testCommandProcessor(isCommandLine, argc == 3 ? argv[2] : "");
+    //     return 0;
+    // }
+
     // testLoggingObserver();
-    return 0;
 }

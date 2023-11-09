@@ -19,6 +19,7 @@ public:
      * Param Constructor
      */
     Command(string name);
+    Command(string name, string param);
     /**
      * Copy constrcutor
      */
@@ -32,6 +33,8 @@ public:
 
     string getName();
 
+    string getParam(); // certain commands like "loadmap" and "addplayer" have a second paramater after them
+
     /**
      * Save the effect of the command
     */
@@ -43,6 +46,7 @@ public:
 
 private:
     string name;
+    string param; // some commands may have paramters such as a map name or a players name 
     string effect;
     friend ostream& operator<<(ostream& out, Command* o);  // overide Stream insertion operator
 
@@ -69,6 +73,8 @@ public:
 
 
     CommandProcessor& operator=(const CommandProcessor& other);
+
+    vector<string> split(string line, string delim);
 
     /*
     * Validate if this command can be executed at this state of the game
