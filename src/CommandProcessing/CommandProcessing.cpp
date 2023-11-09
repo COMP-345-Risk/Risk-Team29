@@ -15,6 +15,11 @@ Command::Command(string n) {
     name = n;
 }
 
+Command::Command(string n, string p) {
+    name = n;
+    param = p;
+}
+
 /**
  * Copy constrcutor
  */
@@ -39,15 +44,15 @@ string Command::getName() {
  * Save the effect of the command
  */
 void Command::saveEffect(string eff) {
-    notify(this);
     effect = eff;
+    notify(this);
 };
 
 /**
  * Override the string to log
 */
 string Command::stringToLog(){ 
-    return "\n\n----------------------------------------- Logger -----------------------------------------\n\nCommand with name: " + name + "was saved with the following effect " +  getEffect() + "\n\n------------------------------------------------------------------------------------------\n\n";
+    return "\n\n----------------------------------------- Logger -----------------------------------------\n\nCommand with name: " + name + " was saved with the following effect " +  effect + "\n\n------------------------------------------------------------------------------------------\n\n";
 }
 
 
@@ -59,6 +64,13 @@ Command& Command::operator=(const Command& other) {
     name = other.name;
     return *this;
 };
+
+/**
+ * certain commands like "loadmap" and "addplayer" have a second paramater after them
+ */
+string Command::getParam() {
+    return param;
+}
 
 /**
  * Override the stream operator for Command
@@ -95,11 +107,21 @@ CommandProcessor::~CommandProcessor() {
 };
 
 /**
-* TODO docs
+* Get command from the user/file
+* Read and save it after
 */
 Command* CommandProcessor::getCommand() {
     string command = readCommand();
-    Command* c = new Command(command);
+    vector<string> line = split(command, " ");
+    string commandName = line[0];
+    string commandParam = "";
+    if(line.size() > 1) {
+        commandParam = line[1];
+    }
+    //separate the user input if there's more than 1 argument
+    // save as command 
+    // save input
+    Command* c = new Command(commandName, commandParam);
     saveCommand(c);
     return c;
 };
@@ -119,11 +141,9 @@ CommandProcessor& CommandProcessor::operator=(const CommandProcessor& other) {
 bool CommandProcessor::validate(Command* c, State* currentState) {
     string commandName = c->getName();
     string currentStateName = currentState->getStateName();
-    regex mapRegex("^loadmap [A-Za-z0-9/.]+$");
-    regex playerRegex("^addplayer [A-Za-z0-9]+$");
     // map regex checks if the loadmap command is written properly and if there is a file name afterwards 
     // NOTE: it doesnt check for the syntax of the file name, the file wont be able to open if its an invalid path
-    if (regex_match(commandName, mapRegex)) {
+    if (commandName == "loadmap" && !(c->getParam().empty())) {
         if (currentStateName.compare("start") == 0 ||
             currentStateName.compare("maploaded") == 0) {
             return true;
@@ -134,7 +154,7 @@ bool CommandProcessor::validate(Command* c, State* currentState) {
             return true;
         }
     }
-    else if (regex_match(commandName, playerRegex)) {
+    else if (commandName == "addplayer" && !c->getParam().empty()) {
         if (currentStateName.compare("mapvalidated") == 0 ||
             currentStateName.compare("playersadded") == 0) {
             return true;
@@ -178,9 +198,39 @@ string CommandProcessor::readCommand() {
     cout << "Please enter one of the commands:\n loadmap <mapfile> \n validatemap \n addplayer <playername> \n gamestart \n replay \n quit \n";
     string userInput;
     getline(cin, userInput);
+
     cout << "\nYou have entered: " << userInput << "\n\n";
     return userInput;
 };
+
+/**
+ * TODO DOCS
+*/
+vector<string> CommandProcessor::split(string line, string delim) {
+
+    vector<string> words;
+    int start = 0;
+    string word;
+
+    // Continue while a delimiter is found
+    while ((start = line.find(delim)) != string::npos) {
+        // Remove the delimiter
+        word = line.substr(0, start);
+        // If word exists, add it to the array of words to return
+        if (word != "") {
+            words.push_back(word);
+        }
+        // Remove the stuff I have already found
+        line.erase(0, start + delim.length());
+    }
+
+    // For the last word (ex: 1̶,̶2̶,̶3) where "1,2," were already covered
+    if (!line.empty()) {
+        words.push_back(line);
+    }
+
+    return words;
+}
 
 /**
  * Override the stream operator for CommandProcessor
