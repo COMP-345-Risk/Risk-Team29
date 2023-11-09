@@ -92,14 +92,9 @@ void testLoggingObserver() {
     delete p2; // will delete all items that were passed to players constructor such as territories, hand, orderlist and state
     p2 = NULL;
 
-
-    delete c;
-    c = NULL;
-    
-    // TODO: delete command and processor
-    // delete processor;
-    // processor = NULL;
-
+    // command will be deleted inside of the processor 
+    delete processor;
+    processor = NULL;
 
     delete logger;
     logger = NULL;

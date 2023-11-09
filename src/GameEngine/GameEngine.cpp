@@ -156,23 +156,25 @@ Transition::Transition(string requiredCommand, State* finalState){
 
     // loadmap and transition will store the next state for loadmap i.e: `maploaded`
     // todo: EYAL THIS IS TEMP, THIS SHOULD BE IN THE GAMEENGINE PARAMS, I WILL ADD IT SOON
-    map<string, Transition*> initializeGameTransitionsV2(){
+    map<string, map<string, Transition*>> initializeGameTransitionsV2(){
         vector<State*> states = initializeGameStates();
-        map<string, Transition*> transitions;
+        map<string, map<string, Transition*>> transitions;
 
-        transitions["start"] = new Transition("loadmap", states[1]); 
-        transitions["loadmap"] = new Transition("loadmap", states[1]); 
-        transitions["validate"] = new Transition("validate", states[1]);
-        transitions["addplayer"] = new Transition("addplayer", states[3]);
-        transitions["assigncountries"] = new Transition("assigncountries", states[4]);
-        transitions["issueorder"] = new Transition("issueorder", states[5]);
-        transitions["endissueorders"] = new Transition("endissueorders", states[6]);
-        transitions["execorder"] = new Transition("execorder", states[6]);
-        transitions["endexecorders"] = new Transition( "endexecorders", states[4]);
-        // todo, win should be replay or quit
-        transitions["win"] = new Transition("win", states[7]);
-        transitions["play"] = new Transition("play", states[0]);
-        transitions["end"] = new Transition( "end", states[8]);
+        transitions["start"]["loadmap"] = new Transition("loadmap", states[1]); // maploaded
+        transitions["maploaded"]["loadmap"] = new Transition("loadmap", states[1]); // maploaded
+        transitions["maploaded"]["validatemap"] = new Transition("validatemap", states[2]); // mapvalidated
+        transitions["mapvalidated"]["addplayer"] = new Transition("addplayer", states[3]); // playersadded
+        transitions["playersadded"]["addplayer"] = new Transition("addplayer", states[3]); // playersadded
+        transitions["playersadded"]["gamestart"] = new Transition("gamestart", states[4]); // assignreinforcement
+        transitions["assignreinforcement"]["issueorder"] = new Transition("issueorder", states[5]); // issueorders
+        transitions["issueorders"]["issueorder"] = new Transition("issueorder", states[5]); // issueorders
+        transitions["issueorders"]["issueordersend"] = new Transition("issueordersend", states[6]); // executeorders
+        transitions["executeorders"]["execorder"] = new Transition("execorder", states[6]); // executeorders
+        transitions["executeorders"]["endexecorders"] = new Transition("endexecorders", states[4]); // assignreinforcement
+        transitions["executeorders"]["win"] = new Transition("win", states[7]); // win
+        transitions["win"]["quit"] = new Transition("quit", states[8]); // end
+        transitions["win"]["replay"] = new Transition("replay", states[0]); // start
+
 
         return transitions;
     }

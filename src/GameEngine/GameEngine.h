@@ -92,5 +92,4 @@ void testGameStates();
 
 
 
-// todo class declaration
-map <string, Transition*> initializeGameTransitionsV2();
+map<string, map<string, Transition*>> initializeGameTransitionsV2();
