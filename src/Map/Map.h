@@ -14,6 +14,8 @@ class Continent {
 private:
     int id;
     string name;
+    int ownerID;
+    friend ostream& operator << (ostream& out, Continent* c); // overide Stream insertion operator
 
 public:
 
@@ -30,6 +32,11 @@ public:
     string getName() const;
 
     int getId() const;
+
+    void setOwnerID(int id);
+
+    int getOwnerID();
+
 };
 
 /************************************************************ Territory ************************************************************/
@@ -43,7 +50,7 @@ private:
     int ownerId;
     int armyCount;
     vector<Territory*> adjacencyList;
-    friend ostream& operator << (ostream& out, Territory* o); // overide Stream insertion operator
+    friend ostream& operator << (ostream& out, Territory* t); // overide Stream insertion operator
     
 public:
     /**
@@ -122,6 +129,15 @@ public:
     void addContinent(Continent*);
 
     void addTerritory(Territory*);
+
+    //TODO:
+    map<int, Continent*> getContinents();
+
+    Continent* getContinent(int id);
+
+    Continent* getContinent(string name);
+
+    vector<Territory*> getContinentTerritories(int continentID);
 
     /**
     * Print the summary of map

@@ -168,9 +168,24 @@ void testMainGameLoop(){
 
     cout << ge->getGameTransitions()["start"]["loadmap"];
     
-    // cout <<ge;
+    //cout <<ge->getMap()->getTerritory("Scotland");
 
-    ge->mainGameLoop();
+    //cout <<ge->getMap()->getContinent(4);
+
+    //cout << ge->getMap()->getContinent("Western Europe");
+
+    // for(auto t: ge->getMap()->getContinentTerritories(4))
+    //     cout << t;
+
+    //cout << ge;
+
+    //ge->mainGameLoop(); 
+
+    
+
+
+
+
 
 
 

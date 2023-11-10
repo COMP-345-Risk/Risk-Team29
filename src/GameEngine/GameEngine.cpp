@@ -171,8 +171,17 @@ void GameEngine::mainGameLoop(){
     *
     */
 void GameEngine::reinforcementPhase() {
-    cout << "Hi from GameEnginereinforcementPhase\n";
-    
+    for(auto player: getPlayers()){
+        int numTerritories = player->getTerritories().size();
+        if (numTerritories / 3 <= 3) { // between 0-11 territories owned
+            player->addReinforcement(3);
+        }else{
+            player->addReinforcement(numTerritories / 3); // 12 and over territories owned (round down)
+        }
+        //TODO:
+        //playerHasAllConitnents
+    }
+
 
 }
 
