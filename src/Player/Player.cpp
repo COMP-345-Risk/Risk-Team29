@@ -56,6 +56,9 @@ Player::Player(const Player& p) {
     state = new State(*p.state);
   }
 
+  // copy reinforcements
+  reinforcements = p.reinforcements;
+
   // its not a pointer, so we just increase the ID 1
   id = p.id + 1;
 };
