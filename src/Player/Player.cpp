@@ -16,6 +16,13 @@ Player::Player(vector<Territory*> t, Hand* h, OrdersList* o, int id, State* s) {
   srand((unsigned)time(NULL));
 }
 
+void Player::setName(string n){
+  name = n;
+}
+
+string Player::getName() {
+  return name;
+}
 /**
  *  Helper method to list attack/defended territories
  */
@@ -49,6 +56,9 @@ Player::Player(const Player& p) {
     state = new State(*p.state);
   }
 
+  // copy reinforcements
+  reinforcements = p.reinforcements;
+
   // its not a pointer, so we just increase the ID 1
   id = p.id + 1;
 };
@@ -75,7 +85,15 @@ Player::~Player() {
 /**
  * Default Constructor
  */
-Player::Player(){};
+Player::Player(){
+  hand = new Hand();
+  reinforcements = 0;
+};
+
+/**
+ * Param Constructor
+ */
+Player::Player(int i) : Player(){ id  = i;};
 
 int Player::getID(){ return this->id;}
 
@@ -155,6 +173,7 @@ vector<Territory*> Player::toAttack() {
     return attacked;
   }
   int index = rand() % territories.size() + 1;
+  
   for (int i = 0; i < index; i++) {
     attacked.push_back(territories.at(i));
   }
@@ -179,14 +198,29 @@ OrdersList* Player::issueOrder(Order* o) {
  */
 ostream& operator<<(ostream& out, Player* p) {
   out << "Printing info about player ID: " << p->id
-      << "\n********************************\n\n"
-      << " Reinforcements: " << p->getReinforcement() <<"\n\n"
-      << " Info about territories: \n ------------------------\n";
-  p->printTerritories(p->territories);
-  out << p->orderList;
+      << "\n********************************\n\n";
+      int reinforcementCount = p->getReinforcement();
+      int territoryCount = p->territories.size();
+      if(reinforcementCount > 0){
+        out << " Reinforcements: " << reinforcementCount <<"\n\n";
+      }
+      if(territoryCount > 0){
+        out << " Info about territories: \n ------------------------\n";
+        p->printTerritories(p->territories);
+      };
+    out << "My name is: " <<  p->name << "\n";
+     if(territoryCount > 0){
+        out << " Info about territories: \n ------------------------\n";
+        p->printTerritories(p->territories);
+      };
+
+      //  if(!(p->orderList == NULL)){
+      //   out << p->orderList;
+      // };
   out << p->hand;
-  out << "\nCurrent player's state: "
-      << (p->state == NULL ? "no state yet" : p->state->getStateName())
-      << "\n\n";
+  // !! dont need state in player
+  // out << "\nCurrent player's state: "
+  //     << (p->state == NULL ? "no state yet" : p->state->getStateName())
+  //     << "\n\n";
   return out;
 }

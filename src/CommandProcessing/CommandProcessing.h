@@ -4,10 +4,15 @@
 #include <iostream>
 #include <regex>
 #include <fstream>
-#include "../GameEngine/GameEngine.h"
 #include "../LoggingObserver/LoggingObserver.h"
+#include "../GameEngine/GameEngine.h"
 
 using namespace std;
+
+class Subject;
+class ILoggable;
+class State;
+
 /************************************************************ Command **************************************************************/
 class Command : public Subject, public ILoggable {
 public:

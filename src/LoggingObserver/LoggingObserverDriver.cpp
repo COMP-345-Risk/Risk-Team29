@@ -72,6 +72,12 @@ void testLoggingObserver() {
     c->attach(logger);
     c->saveEffect("new effect");
 
+    // test 
+    // init the list of transitions
+    GameEngine * ge = new GameEngine();
+    ge->attach(logger);
+    ge->transition("loadmap"); // command loadmap will set the state to maploaded
+
 
     // avoid dangeling pointers
     for (int i = 0; i < numberOfOrders; i++) {
@@ -92,6 +98,9 @@ void testLoggingObserver() {
     delete p2; // will delete all items that were passed to players constructor such as territories, hand, orderlist and state
     p2 = NULL;
 
+    delete ge;
+    ge = NULL;
+
     // command will be deleted inside of the processor 
     delete processor;
     processor = NULL;
@@ -100,17 +109,3 @@ void testLoggingObserver() {
     logger = NULL;
 
 }
-
-// TODO: when merged - call `notify(this)` inside of each of those methods 
-// CommandProcessor::saveCommand() - DONE
-// Order::execute() --> DONE
-// OrderList::addOrder() --> DONE
-// Command::saveEffect() - DONE  - but effect doesnt print 
-// GameEngine::transition() - TODO
-
-//todo: When merged - Extend the following Classes from Subject, public ILoggable and override the stringToLogMethod
-// Order - DONE 
-// OrderList -DONE
-// CommandProcessor - DONE
-// Command - DONE
-// GameEngine 
