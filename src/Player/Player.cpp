@@ -87,6 +87,7 @@ Player::~Player() {
  */
 Player::Player(){
   hand = new Hand();
+  reinforcements = 0;
 };
 
 /**
