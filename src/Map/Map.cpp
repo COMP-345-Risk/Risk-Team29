@@ -148,7 +148,7 @@ Map* MapLoader::loadMap(string filename) {
     // Check if the file was successfully opened
     if (!inputFile.is_open()) {
         cout << "...Error: Failed to open the file...\n";
-        return loadedMap; // Exit the program
+        return NULL; // Exit the program
     }
 
     // Go line by line and create territories
@@ -252,7 +252,7 @@ Map* MapLoader::loadMap(string filename) {
 
     // Close the file
     inputFile.close();
-    cout << "...Successfully loaded the Map...\n";
+    cout << "... ✅ Successfully loaded the Map...\n";
     return loadedMap;
 }
 
@@ -471,7 +471,7 @@ bool Map::validate() {
             }
         }
     }
-    cout << "...Success! Map has been validated\n\n";
+    cout << ".... ✅ Success! Map has been validated....\n\n";
     return true;
 
 }

@@ -51,7 +51,6 @@ void testCommandProcessor(bool isConsole, string filename = "") {
     map<string, map<string, Transition*>> transitions = initializeGameTransitionsV2();
     State* state = new State("start");
     int numberOfCommands = 7;
-    cout << "flouf" << transitions["start"]["loadmap"]->getCommand();
     for (int i = 0; i < numberOfCommands; i++) {
         Command* c = processor->getCommand();
         string stateName = state->getStateName();

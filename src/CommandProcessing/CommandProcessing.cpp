@@ -204,7 +204,9 @@ string CommandProcessor::readCommand() {
 };
 
 /**
- * TODO DOCS
+* Some commands have the following syntax: `command <param>` such as `addplayer lara`
+* we want to create a vector of those words [addplayer, lara] 
+* We can store `addplayer` in the commandlist and `lara` as a param
 */
 vector<string> CommandProcessor::split(string line, string delim) {
 
@@ -250,7 +252,6 @@ ostream& operator<<(ostream& out, CommandProcessor* c) {
 /**
  * Default
  */
- // todo: do i need to call the default con here??!?!
 FileCommandProcessorAdapter::FileCommandProcessorAdapter() : CommandProcessor::CommandProcessor() {
 };
 /**
@@ -270,13 +271,11 @@ FileCommandProcessorAdapter::FileCommandProcessorAdapter(const FileCommandProces
 /**
  * Destructor
  */
- // TODO: how can i call the base descturo
 FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
     inputFile.close();
 };
 
 FileCommandProcessorAdapter& FileCommandProcessorAdapter::operator=(const FileCommandProcessorAdapter& other) {
-    // TODO how to call the base?! 
     fileName = other.fileName;
     return *this;
 };
@@ -305,7 +304,7 @@ string FileCommandProcessorAdapter::readCommand() {
 
         }
         else {
-            cout << "FileCommandProcessorAdapter EOF";
+            cout << "FileCommandProcessorAdapter EOF\n";
             return "";
         }
     };

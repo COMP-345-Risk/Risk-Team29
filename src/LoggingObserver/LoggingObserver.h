@@ -2,10 +2,10 @@
 #include <iostream>
 #include <fstream>
 #include <list>
-#include "../GameEngine/GameEngine.h"
 
 
 using namespace std;
+
 /************************************************************ ILoggable ************************************************************/
 class ILoggable {
     // ? : does this need a constructor and destructor
