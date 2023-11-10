@@ -1,9 +1,10 @@
+#include "LoggingObserver/LoggingObserver.h"
 #include "Map/Map.h"
 #include "Player/Player.h"
 #include "OrdersList/Orders.h"
 #include "CardsDeck/Cards.h"
-#include "GameEngine/GameEngine.h"
 #include "CommandProcessing/CommandProcessing.h"
+#include "GameEngine/GameEngine.h"
 
 int main(int argc, char* argv[])
 {
@@ -19,7 +20,9 @@ int main(int argc, char* argv[])
     /*
     * Assignment 2
     */
-    // testOrderExecution();
+    testOrderExecution();
+    testStartupPhase();
+    testLoggingObserver();
     // argv[0] is the name of the program hence the second param will be what we need (flag)
     if (argc > 1) {
         string flag = argv[1];
@@ -27,6 +30,4 @@ int main(int argc, char* argv[])
         testCommandProcessor(isCommandLine, argc == 3 ? argv[2] : "");
         return 0;
     }
-
-    // testLoggingObserver();
 }

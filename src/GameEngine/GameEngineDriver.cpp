@@ -2,6 +2,7 @@
 #include "../Player/Player.h"
 #include "../Map/Map.h"
 
+
 void testGameStates() {
 
     cout << "\n************************************\nTesting Game Driver!!! \n************************************\n\n";
@@ -113,7 +114,11 @@ void testGameStates() {
 
 /************************************************************ Test Driver A2 **************************************************************/
 
-
+void testStartupPhase() {
+    GameEngine * g = new GameEngine();
+    CommandProcessor* processor = new FileCommandProcessorAdapter("setup.txt");
+    g->startupPhase(processor);
+}
 void testMainGameLoop(){
 
     // Create Map > Create 2 players > create gameEngine
