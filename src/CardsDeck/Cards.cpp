@@ -328,7 +328,7 @@ ostream& operator << (ostream& out, Hand* h) {
     }
     else {
         for(int i = 0 ; i < h->hand.size(); i++){
-            out << "Card type:" << h->hand.at(i)->getType() << "\n";
+            out << "🃏 Card type: " << h->hand.at(i)->getType() << "\n";
         }
     }
 

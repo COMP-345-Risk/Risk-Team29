@@ -22,6 +22,7 @@ class Player {
   Hand* hand;
   OrdersList* orderList;
   State* state;
+  string name;
 
   /**
    * Helper method to print the list of territories to attack/defended
@@ -40,6 +41,11 @@ class Player {
    * Default Constructor
    */
   Player();
+
+  /**
+   * Param con
+   */
+  Player(int id);
 
   /**
    * Copy Constructor
@@ -76,6 +82,10 @@ class Player {
   bool ownsTerritory(Territory *t);
 
   Hand* getHand();
+
+  string getName();
+
+  void setName(string n);
 
   /**
    * Returns a random list of territories that are assigned to the user which

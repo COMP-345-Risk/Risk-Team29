@@ -2,9 +2,9 @@
 #include <vector>
 #include <iostream>
 
-#include "../GameEngine/GameEngine.h"
-#include "../Map/Map.h"
 #include "../LoggingObserver/LoggingObserver.h"
+#include "../Map/Map.h"
+#include "../GameEngine/GameEngine.h"
 
 
 using namespace std;

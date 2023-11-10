@@ -4,39 +4,43 @@
 #include <time.h>
 #include <iostream>
 #include <map>
-
+#include "../CommandProcessing/CommandProcessing.h"
 #include "../Map/Map.h"
 
+// to avoid circular dependencies
 class Player;
+class FileCommandProcessorAdapter;
+class CommandProcessor;
+
 
 using namespace std;
 
 /************************************************************ State **************************************************************/
-class State{
+class State {
 public:
-/**
- * Default Constructor
- */
+    /**
+     * Default Constructor
+     */
     State();
-/**
- * Destructor
- */
+    /**
+     * Destructor
+     */
     ~State();
-/**
- * Constructor with an argument(s)
- */
+    /**
+     * Constructor with an argument(s)
+     */
     State(string name);
-/**
- * Assignment Operator
- */
+    /**
+     * Assignment Operator
+     */
     State& operator=(const State& other);
-/**
- * Copy Constructor
- */
+    /**
+     * Copy Constructor
+     */
     State(const State& other);
-/**
- * overide Stream insertion operator
- */
+    /**
+     * overide Stream insertion operator
+     */
     friend ostream& operator<<(ostream& out, State* s);
 
     string getStateName();
@@ -48,36 +52,36 @@ private:
 };
 
 /************************************************************ Transition **************************************************************/
-class Transition{
+class Transition {
 public:
-/**
- * Default Constructor
- */
-	Transition();
-/**
- * Destructor
- */
+    /**
+     * Default Constructor
+     */
+    Transition();
+    /**
+     * Destructor
+     */
     ~Transition();
-/**
- * Constructor with with an argument(s)
- */
-	Transition(string requiredCommand, State*  finalState);
-/**
- * Assignment Operator
- */
-	Transition& operator=(const Transition& other);
-/**
- * Copy Constructor
- */
+    /**
+     * Constructor with with an argument(s)
+     */
+    Transition(string requiredCommand, State* finalState);
+    /**
+     * Assignment Operator
+     */
+    Transition& operator=(const Transition& other);
+    /**
+     * Copy Constructor
+     */
     Transition(const Transition& other);
-/**
- * overide Stream insertion operator
- */
-friend ostream& operator<<(ostream& out, Transition* t);
+    /**
+     * overide Stream insertion operator
+     */
+    friend ostream& operator<<(ostream& out, Transition* t);
 
-string getCommand();
+    string getCommand();
 
-State * getNextState();
+    State* getNextState();
 
 private:
     string command;
@@ -85,12 +89,12 @@ private:
 };
 
 /************************************************************ Game Engine **************************************************************/
-class GameEngine {
+class GameEngine : public Subject, public ILoggable  {
 public:
     GameEngine();
-  
-    GameEngine(Map *map, vector<Player*> players);
-    
+
+    GameEngine(Map* map, vector<Player*> players);
+
     ~GameEngine();
 
     Map* getMap();
@@ -105,11 +109,18 @@ public:
 
     void executeOrdersPhase();
 
+    void startupPhase(CommandProcessor * command);
+    
+    void transition(string command);
+
+    string stringToLog();
+
 
 private:
-    vector<State*> gameStates;
-    vector<Transition*> gameTransitions;
-    Map *map;
+    vector<State*> gameStates; // all the game states
+    State* currentState; // current state of the player
+    map<string, map<string, Transition*>> gameTransitions;
+    Map* map;
     vector<Player*> players;
     friend ostream& operator<<(ostream& out, GameEngine* ge);  // overide Stream insertion operator
 };
@@ -119,11 +130,11 @@ private:
 /**
  * This method initializes the game states and then stores them in a Vector
  */
-    vector<State*> initializeGameStates();
+vector<State*> initializeGameStates();
 /**
  * This method initializes the game transitions and then stores them in a Vector
  */
-    vector<Transition*> initializeGameTransitions();
+vector<Transition*> initializeGameTransitions();
 
 
 /************************************************************ GameEngineDriver **************************************************************/
@@ -131,6 +142,7 @@ void testGameStates(); //A1
 
 void testMainGameLoop(); //A2
 void testGameStates();
+void testStartupPhase();
 
 
 
