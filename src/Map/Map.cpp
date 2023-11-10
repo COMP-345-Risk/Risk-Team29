@@ -19,6 +19,12 @@ Continent::Continent(string n, int i) {
     ownerID = 0;
 }
 
+Continent::Continent(string name, int id, int reinforcementBonus){
+    this->name = name;
+    this->id = id;
+    this->reinforcementBonus = reinforcementBonus;
+}
+
 string Continent::getName() const {
     return name;
 }
@@ -31,11 +37,14 @@ void Continent::setOwnerID(int id){this->ownerID = id;}
 
 int Continent::getOwnerID(){return ownerID; }
 
+int Continent::getReinforcementBonus(){ return reinforcementBonus;}
+
 ostream& operator << (ostream& out, Continent* c)
 {
     out << "Continent: " << (c->getName())
         << " | ID: " << c->getId()
         << " | Owner: " << c->getOwnerID()
+        << " | reinforcementBonus: " << c->getReinforcementBonus()
         << "\n\n";
     return out;
 }
@@ -122,15 +131,216 @@ ostream& operator << (ostream& out, Territory* t)
     return out;
 }
 
+
+
+/************************************************************ Map ************************************************************/
+/**
+* Default constructor
+*/
+Map::Map() {};
+
+/**
+* Copy constructor
+*/
+Map::Map(const Map& m) {
+    cout << "...Testing the copy constructor...\n";
+    territories = m.territories;
+    continents = m.continents;
+};
+
+/**
+* Param constructor
+*/
+Map::Map(map<int, Continent*> c, map<int, Territory*> t) {
+    continents = c;
+    territories = t;
+};
+
+/**
+* Deconstructor
+*/
+Map::~Map() {
+    // delete all territories
+    for (pair<int, Territory*> territory : territories) {
+        delete territory.second;
+        territory.second = NULL;
+    };
+
+
+    // delete all continents
+    for (pair<int, Continent*> contient : continents) {
+        delete contient.second;
+        contient.second = NULL;
+    };
+};
+
+map<int, Territory*> Map::getterritories() { return this->territories; }
+
+Territory* Map::getTerritory(string tName) {
+    for (auto const& t : this->getterritories()) {
+        if (t.second->getName().compare(tName) == 0) {
+            return t.second;
+        }
+    }
+    return NULL;
+}
+
+/**
+* Will be stored in a key value pair ex: (1, Contient)
+*/
+void Map::addContinent(Continent* continent) {
+    continents[continent->getId()] = continent;
+}
+
+/**
+* Will be stored in a key value pair ex: (1, Territory)
+*/
+void Map::addTerritory(Territory* territory) {
+    territories[territory->getId()] = territory;
+}
+
+map<int, Continent*> Map::getContinents() { return continents; }
+
+Continent* Map::getContinent(int id) {
+    for (const auto& c : getContinents()) {
+        if (c.second->getId() == id)
+            return c.second;
+    }
+    cout << "No continent matches the id provided, returning NULL \n";
+    return NULL;
+}
+
+Continent* Map::getContinent(string name){
+    for (const auto& c : getContinents()) {
+        if (c.second->getName().compare(name)==0)
+            return c.second;
+    }
+    cout << "No continent matches name provided, returning NULL \n";
+    return NULL;
+}
+
+vector<Territory*> Map::getContinentTerritories(int continentID){
+    vector<Territory*> continentTerritories;
+    for(const auto& t: getterritories()){ //map datatype
+        if(t.second->getContinentId() == continentID){
+            continentTerritories.push_back(t.second);
+        }
+    }
+    return continentTerritories;
+}
+
+vector<Territory*> Map::getContinentTerritories(string continentName){
+    vector<Territory*> continentTerritories;
+    for (const auto& t : getterritories()) { //map datatype
+        if (t.second->getContinentId() == getContinent(continentName)->getId()) {
+            continentTerritories.push_back(t.second);
+        }
+    }
+    return continentTerritories;
+}
+
+
+/**
+* Print the summary of map
+*/
+void Map::printMapSummary() {
+    cout << "\n" << "Continents of the loaded map: \n" << "-------------------\n";
+    for (auto const& continent : continents) {
+        cout << "ID: " << continent.second->getId() << "   |  Name:" << continent.second->getName() << "\n";
+        cout << "---------------------------\n";
+
+    }
+    cout << "\n" << "Territories of the loaded map: \n" << "-------------------\n";
+    for (auto const& territory : territories) {
+        cout << "ID: " << territory.second->getId() << "  |  Name: " << territory.second->getName() << " ---> Connected to: ";
+        for (Territory* connected : territory.second->getAdjacencyList()) {
+            cout << connected->getName() << " ";
+        }
+        cout << "\n---------------------------\n";
+    }
+}
+
+/**
+* Validate the map structure
+* 1) the map is a connected graph
+* 2) continents are connected subgraphs
+* 3) each country belongs to one and only one continent
+*/
+bool Map::validate() {
+    cout << "...Validate the map...\n";
+    // 1) confirm that the graph is NOT fully connected
+    // 2) find a continent that is not connected
+    map<int, bool> visited;
+    map<int, bool> visitedContinent;
+    stack<Territory*> territoryStack;
+
+    territoryStack.push(territories.find(1)->second);
+    while (!territoryStack.empty()) {
+        Territory* current = territoryStack.top();
+        territoryStack.pop();
+
+        // check if the key exists in visited
+        if (visited.count(current->getId()) == 0) {
+            visited[current->getId()] = true;
+            // check if adjecent territories have a key in visited and if not add them to the territoryStack to test them next
+            for (Territory* neighbor : current->getAdjacencyList()) {
+                if (visited.count(neighbor->getId()) == 0) {
+                    territoryStack.push(neighbor);
+                }
+            }
+        }
+        // repeat the same logic for continents
+        if (visitedContinent.count(current->getId()) == 0) {
+            visitedContinent[current->getContinentId()] = true;
+        }
+
+    }
+    // loop through territories and see if they have been visited
+    for (int i = 1; i < territories.size() + 1; i++) {
+        if (visited.count(territories.find(i)->second->getId()) == 0) {
+            cout << "...Error: not ALL territories have been visited and hence the graph is NOT connected...\n";
+            cout << "...Territory " << territories.find(i)->second->getName() << " is NOT connected...\n\n\n";
+
+            return false;
+        }
+    }
+    // loop through continents and see if they have been visited
+    for (int i = 1; i < continents.size() + 1; i++) {
+        if (visitedContinent.count(continents.find(i)->second->getId()) == 0) {
+            cout << "...Error: not ALL continents have been visited and hence the graph is NOT connected...\n";
+            cout << "...Continent " << continents.find(i)->second->getName() << " is NOT connected...\n\n\n";
+            return false;
+        }
+    }
+
+    // 3) ensure country belongs to only one and only continent
+    // make a copy of the adjacency list
+    // Finding duplicates comfirms that a territory belongs to multiple continents because when creating the map, 
+    // the territory instance will only ever contain one contient
+    for (int i = 1; i < territories.size() + 1; i++) {
+        for (int j = i + 1; j < territories.size() + 1; j++) {
+            if (territories.at(i)->getName().compare(territories.at(j)->getName()) == 0) {
+                //found duplicate (two territories have the same name)
+                cout << "...Error: non unique name for territory\n\n";
+                return false;
+            }
+        }
+    }
+    cout << "...Success! Map has been validated\n\n";
+    return true;
+
+}
+
+
 /************************************************************ MapLoader ************************************************************/
 
 /**
 * Will read the map file (will handle errors if file doesnt exist or can't open)
 * Will parse line by line
 * The file is devided in to two important sections: Continents & Territories
-* Continents look like so: 
+* Continents look like so:
 * continentName=howManyTerritoriesItHas
-* Territories look like so: 
+* Territories look like so:
 * territoryName, coord-x, coord-y, continent, listOfAdjecentTerritories seperated by commas
 */
 Map* MapLoader::loadMap(string filename) {
@@ -179,8 +389,9 @@ Map* MapLoader::loadMap(string filename) {
                 }
 
                 string continentName = words[0];
+                int reinforcementBonus = stoi(words[1]);
                 // Create a new contintent with an auto incrementing id
-                Continent* continent = new Continent(continentName, ++continentId);
+                Continent* continent = new Continent(continentName, ++continentId, reinforcementBonus );
                 loadedMap->addContinent(continent);
                 // Keep track of the list of continents we created thus far
                 continents.push_back(continent);
@@ -285,193 +496,4 @@ vector<string> MapLoader::split(string line, string delim) {
     }
 
     return words;
-}
-
-
-/************************************************************ Map ************************************************************/
-/**
-* Default constructor
-*/
-Map::Map() {};
-
-/**
-* Copy constructor
-*/
-Map::Map(const Map& m) {
-    cout << "...Testing the copy constructor...\n";
-    territories = m.territories;
-    continents = m.continents;
-};
-
-/**
-* Param constructor
-*/
-Map::Map(map<int, Continent*> c, map<int, Territory*> t) {
-    continents = c;
-    territories = t;
-};
-
-/**
-* Deconstructor
-*/
-Map::~Map() {
-    // delete all territories
-    for (pair<int, Territory*> territory : territories) {
-        delete territory.second;
-        territory.second = NULL;
-    };
-
-
-    // delete all continents
-    for (pair<int, Continent*> contient : continents) {
-        delete contient.second;
-        contient.second = NULL;
-    };
-};
-
-map<int, Territory*> Map::getterritories() { return this->territories; }
-
-Territory* Map::getTerritory(string tName) {
-    for (auto const& t : this->getterritories()) {
-        if (t.second->getName().compare(tName) == 0) {
-            return t.second;
-        }
-    }
-    return NULL;
-}
-
-/**
-* Will be stored in a key value pair ex: (1, Contient)
-*/
-void Map::addContinent(Continent* continent) {
-    continents[continent->getId()] = continent;
-}
-
-/**
-* Will be stored in a key value pair ex: (1, Territory)
-*/
-void Map::addTerritory(Territory* territory) {
-    territories[territory->getId()] = territory;
-}
-
-map<int, Continent*> Map::getContinents() { return continents; }
-
-Continent* Map::getContinent(int id) {
-    for (const auto& c : getContinents()) {
-        if (c.second->getId() == id)
-            return c.second;
-    }
-    cout << "No continent matches the id provided, returning NULL \n";
-    return NULL;
-}
-
-Continent* Map::getContinent(string name){
-    for (const auto& c : getContinents()) {
-        if (c.second->getName().compare(name)==0)
-            return c.second;
-    }
-    cout << "No continent matches name provided, returning NULL \n";
-    return NULL;
-}
-
-vector<Territory*> Map::getContinentTerritories(int continentID){
-    vector<Territory*> continentTerritories;
-    for(const auto& t: getterritories()){ //map datatype
-        if(t.second->getContinentId() == continentID){
-            continentTerritories.push_back(t.second);
-        }
-    }
-    return continentTerritories;
-}
-
-
-/**
-* Print the summary of map
-*/
-void Map::printMapSummary() {
-    cout << "\n" << "Continents of the loaded map: \n" << "-------------------\n";
-    for (auto const& continent : continents) {
-        cout << "ID: " << continent.second->getId() << "   |  Name:" << continent.second->getName() << "\n";
-        cout << "---------------------------\n";
-
-    }
-    cout << "\n" << "Territories of the loaded map: \n" << "-------------------\n";
-    for (auto const& territory : territories) {
-        cout << "ID: " << territory.second->getId() << "  |  Name: " << territory.second->getName() << " ---> Connected to: ";
-        for (Territory* connected : territory.second->getAdjacencyList()) {
-            cout << connected->getName() << " ";
-        }
-        cout << "\n---------------------------\n";
-    }
-}
-
-/**
-* Validate the map structure
-* 1) the map is a connected graph
-* 2) continents are connected subgraphs
-* 3) each country belongs to one and only one continent
-*/
-bool Map::validate() {
-    cout << "...Validate the map...\n";
-    // 1) confirm that the graph is NOT fully connected
-    // 2) find a continent that is not connected
-    map<int, bool> visited;
-    map<int, bool> visitedContinent;
-    stack<Territory*> territoryStack;
-
-    territoryStack.push(territories.find(1)->second);
-    while (!territoryStack.empty()) {
-        Territory* current = territoryStack.top();
-        territoryStack.pop();
-
-        // check if the key exists in visited
-        if (visited.count(current->getId()) == 0) {
-            visited[current->getId()] = true;
-            // check if adjecent territories have a key in visited and if not add them to the territoryStack to test them next
-            for (Territory* neighbor : current->getAdjacencyList()) {
-                if (visited.count(neighbor->getId()) == 0) {
-                    territoryStack.push(neighbor);
-                }
-            }
-        }
-        // repeat the same logic for continents
-        if (visitedContinent.count(current->getId()) == 0) {
-            visitedContinent[current->getContinentId()] = true;
-        }
-
-    }
-    // loop through territories and see if they have been visited
-    for (int i = 1; i < territories.size() + 1; i++) {
-        if (visited.count(territories.find(i)->second->getId()) == 0) {
-            cout << "...Error: not ALL territories have been visited and hence the graph is NOT connected...\n";
-            cout << "...Territory " << territories.find(i)->second->getName() << " is NOT connected...\n\n\n";
-
-            return false;
-        }
-    }
-    // loop through continents and see if they have been visited
-    for (int i = 1; i < continents.size() + 1; i++) {
-        if (visitedContinent.count(continents.find(i)->second->getId()) == 0) {
-            cout << "...Error: not ALL continents have been visited and hence the graph is NOT connected...\n";
-            cout << "...Continent " << continents.find(i)->second->getName() << " is NOT connected...\n\n\n";
-            return false;
-        }
-    }
-
-    // 3) ensure country belongs to only one and only continent
-    // make a copy of the adjacency list
-    // Finding duplicates comfirms that a territory belongs to multiple continents because when creating the map, 
-    // the territory instance will only ever contain one contient
-    for (int i = 1; i < territories.size() + 1; i++) {
-        for (int j = i + 1; j < territories.size() + 1; j++) {
-            if (territories.at(i)->getName().compare(territories.at(j)->getName()) == 0) {
-                //found duplicate (two territories have the same name)
-                cout << "...Error: non unique name for territory\n\n";
-                return false;
-            }
-        }
-    }
-    cout << "...Success! Map has been validated\n\n";
-    return true;
-
 }

@@ -118,6 +118,12 @@ public:
      */
     void reinforcementPhase();
 
+    void addReinforcmentBonus(Player* p);
+
+    vector<int> continentIDsPlayerOwns(Player* p);
+
+    bool playerOwnsAllTerritoriesInContinent(int cID, Player *p);
+
     void issueOrdersPhase();
 
     void executeOrdersPhase();

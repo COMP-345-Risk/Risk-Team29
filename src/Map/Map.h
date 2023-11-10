@@ -15,6 +15,7 @@ private:
     int id;
     string name;
     int ownerID;
+    int reinforcementBonus;
     friend ostream& operator << (ostream& out, Continent* c); // overide Stream insertion operator
 
 public:
@@ -29,6 +30,8 @@ public:
     */
     Continent(string, int);
 
+    Continent(string name, int id, int reinforcementBonus);
+
     string getName() const;
 
     int getId() const;
@@ -36,6 +39,8 @@ public:
     void setOwnerID(int id);
 
     int getOwnerID();
+
+    int getReinforcementBonus();
 
 };
 
@@ -139,6 +144,8 @@ public:
 
     vector<Territory*> getContinentTerritories(int continentID);
 
+    vector<Territory*> getContinentTerritories(string continentName);
+
     /**
     * Print the summary of map
     */
@@ -150,11 +157,6 @@ public:
     bool validate();
 };
 
-
-
-/************************************************************ MapDriver ************************************************************/
-
-void testLoadMaps();
 
 /************************************************************ MapLoader ************************************************************/
 
@@ -169,3 +171,8 @@ public:
     */
     vector<string> split(string s, string delim);
 };
+
+
+/************************************************************ MapDriver ************************************************************/
+
+void testLoadMaps();

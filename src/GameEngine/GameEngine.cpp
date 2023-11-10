@@ -166,24 +166,55 @@ void GameEngine::mainGameLoop(){
 }
 
 /**
-    * @brief Players given  number  of  army  units (#  of  territories  owned  divided  by  3,  rounded  down)
-    * If player owns all territories in continent they get a control bonus. Each player gets a minumum of 3 army per turn.
-    *
-    */
+* @brief Players given  number  of  army  units (#  of  territories  owned  divided  by  3,  rounded  down)
+* Each player gets a minumum of 3 army per turn. 
+* If player owns all territories in continent they get a reinforcements bonus.
+*
+*/
 void GameEngine::reinforcementPhase() {
     for(auto player: getPlayers()){
         int numTerritories = player->getTerritories().size();
         if (numTerritories / 3 <= 3) { // between 0-11 territories owned
             player->addReinforcement(3);
+            cout << "Added 3 reinforcments to Player #" << player->getID() << "\n";
         }else{
             player->addReinforcement(numTerritories / 3); // 12 and over territories owned (round down)
+            cout << "Added " << numTerritories / 3 << " reinforcments to Player #" << player->getID() << "\n";
         }
-        //TODO:
-        //playerHasAllConitnents
+        addReinforcmentBonus(player);
     }
-
-
+    cout << "\n";
 }
+
+void GameEngine::addReinforcmentBonus(Player* p){
+    for(auto id : continentIDsPlayerOwns(p) ){ //get the ids of each continent player owns
+        if (continentIDsPlayerOwns(p).size()!=0){
+            int bonusReinforcements = map->getContinent(id)->getReinforcementBonus();
+            p->addReinforcement(bonusReinforcements); // reinforcment bonus
+            cout << "Added " << bonusReinforcements << " bonus reinforcments to Player #" << p->getID() 
+                << " from " << map->getContinent(id)->getName() << "\n";
+        }
+    }
+}
+
+vector<int> GameEngine::continentIDsPlayerOwns(Player *p){
+    vector<int> cPlayerOwns;
+    for(const auto& c : map->getContinents()){ //check every continent
+        if (playerOwnsAllTerritoriesInContinent(c.second->getId(), p)) // use id to see if player owns
+            cPlayerOwns.push_back(c.second->getId()); //add to list
+    }
+    return cPlayerOwns;
+}
+
+bool GameEngine::playerOwnsAllTerritoriesInContinent(int cID, Player *p){
+    for (auto t : map->getContinentTerritories(cID)) {
+        if(t->getOwnerId()!=p->getID()){ 
+            return false; // if one of territory owners is not player return false
+        }
+    }
+    return true;
+}
+
 
 void GameEngine::issueOrdersPhase(){
     cout << "Hi from issueOrdersPhase\n";
