@@ -10,6 +10,7 @@ Player::Player(vector<Territory*> t, Hand* h, OrdersList* o, int id, State* s) {
   orderList = o;
   this->id = id;
   state = s;
+  reinforcements = 0;
 
   // if seed is set to 1, the generator is reinitialized to its initial value
   // and produces the same values as before any call to rand or srand
@@ -87,6 +88,7 @@ Player::~Player() {
  */
 Player::Player(){
   hand = new Hand();
+  reinforcements = 0;
 };
 
 /**

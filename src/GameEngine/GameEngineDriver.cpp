@@ -136,7 +136,7 @@ void testMainGameLoop(){
     map1->validate();
 
 
-    cout << "\n\n---------> Create Player 1 <---------\n\n\n";
+    cout << "\n\n---------> Create Players vector 2 players <---------\n\n\n";
 
     vector<Territory*> t1;
     Hand* h1 = new Hand();
@@ -144,15 +144,9 @@ void testMainGameLoop(){
 
     cout << "...Creating state executeorders (must be in this state to execute orders)...\n";
     State* pState1 = new State("executeorders");
-    cout << "Created state executeorders.\n\n";
 
     cout << "...Creating player 1 with t adjeceny list, Hand, and order list..\n";
     Player* p1 = new Player(t1, h1, pOL1, 1, pState1); // 1 is id
-    cout << "Created player.\n\n";
-
-    cout << p1;
-
-    cout << "\n\n---------> Create Player 2 <---------\n\n\n";
 
     vector<Territory*> t2;
     Hand* h2 = new Hand();
@@ -160,13 +154,61 @@ void testMainGameLoop(){
 
     cout << "...Creating state executeorders (must be in this state to execute orders)...\n";
     State* pState2 = new State("executeorders");
-    cout << "Created state executeorders.\n\n";
+
+    cout << "...Creating player 2 with t adjeceny list, Hand, and order list..\n";
+    Player* p2 = new Player(t2, h2, pOL2, 2, pState2); // 1 is id
 
     cout << "...Creating player 1 with t adjeceny list, Hand, and order list..\n";
-    Player* p2 = new Player(t2, h2, pOL2, 1, pState2); // 1 is id
-    cout << "Created player.\n\n";
+    vector<Player*> players;
+    players.push_back(p1);
+    players.push_back(p2);
 
-    cout << p2;
+    cout << "\n\n---------> Test reinforcementPhase() <---------\n\n\n";
+
+    cout << "...Creating Game Engine with two players ..\n\n";
+    GameEngine *ge = new GameEngine(map1, players);
+
+    cout << "...Printing Western Europe Contient...\n";
+    Continent* westernEurope = ge->getMap()->getContinent("Western Europe");
+    cout << westernEurope;
+
+    cout << "...Printing continents Western Europe owns...\n";
+    for (auto t : ge->getMap()->getContinentTerritories("Western Europe"))
+        cout << t;
+
+    cout << "...Giving player 1 all territories in Western Europe ..\n\n";
+    for (auto t : ge->getMap()->getContinentTerritories("Western Europe")) //bonus 5
+        players[0]->addTerritory(t); 
+
+    cout << "...Western Europe has a reinforcement bonus of " << westernEurope->getReinforcementBonus() << " ..\n\n";
+
+    cout << "...Player 1 has " << ge->getPlayers()[0]->getReinforcement() << " reinforcements..\n\n";
+
+    cout << "...Player 2 has " << ge->getPlayers()[1]->getReinforcement() << " reinforcements..\n\n";
+
+    cout << "...Executing reinforcremntPhase()..\n\n";
+    ge->reinforcementPhase();
+
+    cout << "...Player 1 has " << ge->getPlayers()[0]->getReinforcement() << " reinforcements..\n\n";
+
+    cout << "...Player 2 has " << ge->getPlayers()[1]->getReinforcement() << " reinforcements..\n\n";
+
+    cout << "...Giving player 1 all territories in Balkans ..\n\n";
+    for (auto t : ge->getMap()->getContinentTerritories("Balkans")) //bonus 5
+        players[0]->addTerritory(t);
+
+    cout << "...Player 1 owns 2 continents " << ge->getPlayers()[0]->getTerritories().size() << " territories ..\n\n";
+
+    cout << "...Executing reinforcremntPhase()..\n\n";
+    ge->reinforcementPhase();
+
+
+    cout << "\n\n---------> Test issueOrdersPhase() <---------\n\n\n";
+
+    
+
+
+    
 
 
 

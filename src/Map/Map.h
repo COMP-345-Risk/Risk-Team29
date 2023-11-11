@@ -14,6 +14,9 @@ class Continent {
 private:
     int id;
     string name;
+    int ownerID;
+    int reinforcementBonus;
+    friend ostream& operator << (ostream& out, Continent* c); // overide Stream insertion operator
 
 public:
 
@@ -27,9 +30,18 @@ public:
     */
     Continent(string, int);
 
+    Continent(string name, int id, int reinforcementBonus);
+
     string getName() const;
 
     int getId() const;
+
+    void setOwnerID(int id);
+
+    int getOwnerID();
+
+    int getReinforcementBonus();
+
 };
 
 /************************************************************ Territory ************************************************************/
@@ -43,7 +55,7 @@ private:
     int ownerId;
     int armyCount;
     vector<Territory*> adjacencyList;
-    friend ostream& operator << (ostream& out, Territory* o); // overide Stream insertion operator
+    friend ostream& operator << (ostream& out, Territory* t); // overide Stream insertion operator
     
 public:
     /**
@@ -123,6 +135,17 @@ public:
 
     void addTerritory(Territory*);
 
+    //TODO:
+    map<int, Continent*> getContinents();
+
+    Continent* getContinent(int id);
+
+    Continent* getContinent(string name);
+
+    vector<Territory*> getContinentTerritories(int continentID);
+
+    vector<Territory*> getContinentTerritories(string continentName);
+
     /**
     * Print the summary of map
     */
@@ -134,11 +157,6 @@ public:
     bool validate();
 };
 
-
-
-/************************************************************ MapDriver ************************************************************/
-
-void testLoadMaps();
 
 /************************************************************ MapLoader ************************************************************/
 
@@ -153,3 +171,8 @@ public:
     */
     vector<string> split(string s, string delim);
 };
+
+
+/************************************************************ MapDriver ************************************************************/
+
+void testLoadMaps();

@@ -115,7 +115,15 @@ GameEngine::GameEngine(Map* map, vector<Player*> players) {
     this->players = players;
 }
 
-Map* GameEngine::getMap() { return this->map; }
+vector<State*> GameEngine::getGameStates(){return gameStates;}
+
+State* GameEngine::getCurrentState() { return currentState; }
+
+void GameEngine::setCurrentState(State* s){this->currentState = s;}
+
+map<string, map <string, Transition*> > GameEngine::getGameTransitions(){return gameTransitions;}
+
+Map* GameEngine::getMap(){ return this->map; }
 
 vector<Player*> GameEngine::getPlayers() { return this->players; }
 
@@ -123,16 +131,129 @@ GameEngine::~GameEngine() {
     // todo delete all the game transitions 
 }
 
+/**
+ * @brief Contains reinforcementPhase(), issueOrdersPhase() and executeOrdersPhase()
+ * 
+ * Currently the Game loop is designed to execute each phase 2 times in a loop. 
+ *
+ */
+void GameEngine::mainGameLoop(){
+    
+    string inputCommand = "assignreinforcement";
+    string previousStateName = "playersadded";
+    int count = 0;
+    while(inputCommand.compare("win")!=0 && count < 6){
+        
+        //TODO: Tried using map "gameTransitions", could not figure it out, will try again in future
+        if ( (previousStateName.compare("playersadded") == 0 && inputCommand.compare("assignreinforcement") == 0)
+            || (previousStateName.compare("executeorders") == 0 && inputCommand.compare("issueorders") == 0)) {
+            previousStateName = getGameStates().at(4)->getStateName(); // assignreinforcement
+            reinforcementPhase();
+            inputCommand = "issueorder";
+            
+        }
+        else if ((previousStateName.compare("assignreinforcement") == 0 && inputCommand.compare("issueorder") == 0)
+            || (previousStateName.compare("issueorders") == 0 && inputCommand.compare("issueorder") == 0)) {
+            previousStateName = getGameStates().at(5)->getStateName(); // issueorders
+            issueOrdersPhase();
+            inputCommand = "issueordersend";
+
+        }
+        else if ((previousStateName.compare("issueorders") == 0 && inputCommand.compare("issueordersend") == 0)
+            || (previousStateName.compare("executeorders") == 0 && inputCommand.compare("execorder") == 0)) {
+            previousStateName = getGameStates().at(6)->getStateName(); // executeorders
+            executeOrdersPhase(); 
+            inputCommand = "issueorders";
+        }
+        else {
+            cout << "Invalid choice.\n" ;
+        }
+        count++;
+    }
+}
+
+/**
+* @brief Players given  number  of  army  units (#  of  territories  owned  divided  by  3,  rounded  down)
+* Each player gets a minumum of 3 army per turn. 
+* If player owns all territories in continent they get a reinforcements bonus.
+*
+*/
+void GameEngine::reinforcementPhase() {
+    for(auto player: getPlayers()){
+        int numTerritories = player->getTerritories().size();
+        if (numTerritories / 3 <= 3) { // between 0-11 territories owned
+            player->addReinforcement(3);
+            cout << "Added 3 reinforcments to Player #" << player->getID() << "\n";
+        }else{
+            player->addReinforcement(numTerritories / 3); // 12 and over territories owned (round down)
+            cout << "Added " << numTerritories / 3 << " reinforcments to Player #" << player->getID() << "\n";
+        }
+        addReinforcmentBonus(player);
+    }
+    cout << "\n";
+}
+
+void GameEngine::addReinforcmentBonus(Player* p){
+    for(auto id : continentIDsPlayerOwns(p) ){ //get the ids of each continent player owns
+        if (continentIDsPlayerOwns(p).size()!=0){
+            int bonusReinforcements = map->getContinent(id)->getReinforcementBonus();
+            p->addReinforcement(bonusReinforcements); // reinforcment bonus
+            cout << "Added " << bonusReinforcements << " bonus reinforcments to Player #" << p->getID() 
+                << " from " << map->getContinent(id)->getName() << "\n";
+        }
+    }
+}
+
+vector<int> GameEngine::continentIDsPlayerOwns(Player *p){
+    vector<int> cPlayerOwns;
+    for(const auto& c : map->getContinents()){ //check every continent
+        if (playerOwnsAllTerritoriesInContinent(c.second->getId(), p)) // use id to see if player owns
+            cPlayerOwns.push_back(c.second->getId()); //add to list
+    }
+    return cPlayerOwns;
+}
+
+bool GameEngine::playerOwnsAllTerritoriesInContinent(int cID, Player *p){
+    for (auto t : map->getContinentTerritories(cID)) {
+        if(t->getOwnerId()!=p->getID()){ 
+            return false; // if one of territory owners is not player return false
+        }
+    }
+    return true;
+}
+
+
+void GameEngine::issueOrdersPhase(){
+    cout << "Hi from issueOrdersPhase\n";
+}
+
+void GameEngine::executeOrdersPhase() {
+    cout << "Hi from executeOrdersPhase\n";
+}
 
 ostream& operator << (ostream& out, GameEngine* ge)
 {
 
-    out << "********** Printing Players **********";
-    for (auto p : ge->getPlayers()) {
+    out << "********** Printing current state **********\n"
+        << ge->getCurrentState();
+
+    out << "********** Printing game states **********\n";
+        int count =0;
+        for(auto s: ge->getGameStates()){
+            out << count++ << " "<< s;
+        }
+    out << "********** Printing Transitions **********\n";
+    for (const auto& pair1 : ge->getGameTransitions()) {
+        for (const auto& pair2 : pair1.second ) {
+                out << "previousState: " <<pair1.first<<" | " << pair2.second;
+        }
+    }        
+    out << "********** Printing Players **********\n";
+    for(auto p : ge->getPlayers()){
         out << p;
     }
-    out << "********** Printing Map **********"
-        << ge->getMap();
+    out << "********** Printing Map **********\n";
+        ge->getMap()->printMapSummary();
 
     return out;
 }

@@ -97,13 +97,36 @@ public:
 
     ~GameEngine();
 
+    vector<State*> getGameStates();
+
+    State* getCurrentState();
+
+    void setCurrentState(State* s);
+
+    map<string, map <string, Transition*> > getGameTransitions();
+
     Map* getMap();
 
     vector<Player*> getPlayers();
 
+    /**
+     * @brief Contains reinforcementPhase(), issueOrdersPhase() and executeOrdersPhase()
+     * 
+     */
     void mainGameLoop();
 
+    /**
+     * @brief Players given  number  of  army  units (#  of  territories  owned  divided  by  3,  rounded  down)
+     * If player owns all territories in continent they get a control bonus. Each player gets a minumum of 3 army per turn.
+     * 
+     */
     void reinforcementPhase();
+
+    void addReinforcmentBonus(Player* p);
+
+    vector<int> continentIDsPlayerOwns(Player* p);
+
+    bool playerOwnsAllTerritoriesInContinent(int cID, Player *p);
 
     void issueOrdersPhase();
 
@@ -144,6 +167,4 @@ void testMainGameLoop(); //A2
 void testGameStates();
 void testStartupPhase();
 
-
-
-map<string, map<string, Transition*>> initializeGameTransitionsV2();
+map<string, map<string, Transition*> > initializeGameTransitionsV2();
