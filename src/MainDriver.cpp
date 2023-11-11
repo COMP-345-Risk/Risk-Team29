@@ -20,10 +20,10 @@ int main(int argc, char* argv[])
     /*
     * Assignment 2
     */
-    testOrderExecution();
-    testStartupPhase();
-    testLoggingObserver();
-    testMainGameLoop();
+    // testOrderExecution();
+    // testStartupPhase();
+    // testLoggingObserver();
+     testMainGameLoop();
     // argv[0] is the name of the program hence the second param will be what we need (flag)
     if (argc > 1) {
         string flag = argv[1];
