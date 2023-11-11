@@ -64,6 +64,7 @@ Territory::Territory(string n, int i, int ci, int a) {
     id = i;
     continentId = ci;
     armyCount = a;
+    ownerId = 0;
 }
 
 string Territory::getName() const {
@@ -326,7 +327,7 @@ bool Map::validate() {
             }
         }
     }
-    cout << "...Success! Map has been validated\n\n";
+    cout << "... ✅ Success! Map has been validated\n\n";
     return true;
 
 }

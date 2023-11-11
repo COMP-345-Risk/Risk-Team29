@@ -535,7 +535,7 @@ void GameEngine::startupPhase(CommandProcessor* processor) {
         }
         // print to the user the state of the names
         for (int i = 0; i < parsedNumOfPlayers; i++) {
-            cout << "\n 💪 Reinforcement is set to: " << players.at(i)->getReinforcement() << "\n";
+            cout << "\n💪 Reinforcement is set to: " << players.at(i)->getReinforcement() << "\n";
         }
         cout << "\n .... ✅ Initial armies are setup .... \n";
 
@@ -558,6 +558,7 @@ void GameEngine::startupPhase(CommandProcessor* processor) {
     }
     cout << "\n 👍 You're all set up! use the gamestart command to start playing!\n";
     transition(c->getName());
+    cout << "\n\n---------> Finish start up phase 🎲 <---------\n\n";
 
 }
 
