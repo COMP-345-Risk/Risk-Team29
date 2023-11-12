@@ -109,6 +109,8 @@ public:
 
     vector<Player*> getPlayers();
 
+    GameEngine& operator=(const GameEngine& other);
+
     /**
      * @brief Contains reinforcementPhase(), issueOrdersPhase() and executeOrdersPhase()
      * 

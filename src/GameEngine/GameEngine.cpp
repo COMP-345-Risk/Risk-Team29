@@ -47,7 +47,6 @@ string State::getStateName() {
 void State::setStateName(string sName) { this->stateName = sName; }
 
 
-
 /************************************************************ Transition **************************************************************/
 /**
  * Default Constructor
@@ -171,6 +170,7 @@ void GameEngine::mainGameLoop(){
         count++;
     }
 }
+
 
 /**
 * @brief Players given  number  of  army  units (#  of  territories  owned  divided  by  3,  rounded  down)
@@ -519,6 +519,16 @@ void GameEngine::transition(string command) {
     currentState = gameTransitions[currentState->getStateName()][command]->getNextState();
     cout << currentState;
     notify(this);
+}
+
+
+GameEngine &GameEngine::operator=(const GameEngine &other) {
+    this->map = other.map;
+    this->currentState = other.currentState;
+    this->gameStates = other.gameStates;
+    this->gameTransitions = other.gameTransitions;
+    this->players = other.players;
+    return *this;
 }
 
 /**
