@@ -7,10 +7,12 @@
 #include "../CommandProcessing/CommandProcessing.h"
 #include "../Map/Map.h"
 
+
 // to avoid circular dependencies
 class Player;
 class FileCommandProcessorAdapter;
 class CommandProcessor;
+class Order;
 
 
 using namespace std;
@@ -129,6 +131,10 @@ public:
     bool playerOwnsAllTerritoriesInContinent(int cID, Player *p);
 
     void issueOrdersPhase();
+
+    bool hasMoreReinforcementsPlayers();
+
+    Order* getPlayerInputOrder(Player *p);
 
     void executeOrdersPhase();
 

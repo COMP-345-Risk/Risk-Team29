@@ -2,6 +2,7 @@
 #include "GameEngine.h"
 #include "../Map/Map.h"
 #include "../Player/Player.h"
+#include "../OrdersList/Orders.h"
 
 
 /************************************************************ State **************************************************************/
@@ -83,7 +84,7 @@ Transition::Transition(const Transition& other) {
  * overide Stream insertion operator
  */
 ostream& operator<<(ostream& out, Transition* t) {
-    cout << "The " << t->command << " leads to the next state of : " << t->nextState << "\n";
+    cout << "The " << t->command << " leads to the next state of : " << t->nextState->getStateName() << "\n";
     return out;
 
 }
@@ -110,6 +111,7 @@ GameEngine::GameEngine() {
 */
 GameEngine::GameEngine(Map* map, vector<Player*> players) {
     this->gameStates = initializeGameStates();
+    this->currentState = gameStates[0];
     this->gameTransitions = initializeGameTransitionsV2();
     this->map = map;
     this->players = players;
@@ -222,10 +224,58 @@ bool GameEngine::playerOwnsAllTerritoriesInContinent(int cID, Player *p){
     return true;
 }
 
-
+/**
+ * @brief The player issues deploy orders on its own territories that are in the list returned by toDefend(). As long
+ * as  the  player  has  army  units  in their  reinforcement  pool.
+ */
 void GameEngine::issueOrdersPhase(){
-    cout << "Hi from issueOrdersPhase\n";
+    //1. each player takes turns issuing and order
+    while(hasMoreReinforcementsPlayers()){
+        for(auto p: players){
+            //p->issueOrder()
+        }
+    }
+    // this next part happens in player's issueOrder
+    //2. Deploy orders are only done on list form toDefend() from player
+    //3. Execute orders are only done on list form toAttack() from player
+    //4. Player chooses a card (push to front of list)
 }
+
+bool GameEngine::hasMoreReinforcementsPlayers(){
+    for(auto p: players){
+        if(p->getReinforcement() > 0)
+            return true;
+    }    
+    return false;
+}
+
+Order* GameEngine::getPlayerInputOrder(Player *p){
+    Order *o;
+    cout << "Which order would you like to make, please type the number of on the followig options?\n";
+    cout << "1)Deploy \n2)Advance \n3)Card \n";
+    int input;
+    do {
+    cin >> input;
+    switch (input) {
+    case 1:
+        std::cout << "You chose option 1\n";
+        break;
+    case 2:
+        std::cout << "You chose option 2\n";
+        break;
+    case 3:
+        std::cout << "You chose option 3\n";
+        break;
+    default:
+        std::cout << " ❌ Not a valid choice, please trye again\n";
+        break;
+    }
+    } while (input !=1 || input !=2 || input !=3 );
+
+    return o;
+    
+}
+
 
 void GameEngine::executeOrdersPhase() {
     cout << "Hi from executeOrdersPhase\n";
@@ -240,7 +290,7 @@ ostream& operator << (ostream& out, GameEngine* ge)
     out << "********** Printing game states **********\n";
         int count =0;
         for(auto s: ge->getGameStates()){
-            out << count++ << " "<< s;
+            out << count++ << " "<< s->getStateName() <<"\n";
         }
     out << "********** Printing Transitions **********\n";
     for (const auto& pair1 : ge->getGameTransitions()) {
