@@ -107,6 +107,25 @@ private:
 
 
 };
+/************************************************************ FileLineReader   **************************************************************/
+class FileLineReader {
+public:
+    FileLineReader(string fileName);
+    ~FileLineReader();
+    FileLineReader(const FileLineReader& other);
+    FileLineReader& operator=(const FileLineReader& other);
+    string readLineFromFile();
+
+private:
+    string fileName;
+    // track how we read the file
+    ifstream inputFile;
+    string line;
+
+    friend ostream& operator<<(ostream& out, FileLineReader* o);  // overide Stream insertion operator
+
+};
+
 /************************************************************ FileCommandProcessorAdapter   **************************************************************/
 
 class FileCommandProcessorAdapter : public CommandProcessor {
@@ -118,7 +137,7 @@ public:
     /**
     * Constructor with Params
     */
-    FileCommandProcessorAdapter(string fileName);
+    FileCommandProcessorAdapter(FileLineReader * flr);
     /**
     * Copy constrcutor
     */
@@ -131,18 +150,15 @@ public:
     FileCommandProcessorAdapter& operator=(const FileCommandProcessorAdapter& other);
 
 private:
-    string fileName;
-    // track how we read the file
-    ifstream inputFile;
-    string line;
-
     friend ostream& operator<<(ostream& out, FileCommandProcessorAdapter* o);  // overide Stream insertion operator
     /**
      *   Will read commands from the text file
      */
+    FileLineReader* flr;
     string readCommand();
 
 };
+
 
 /************************************************************ FileCommandProcessorAdapter   **************************************************************/
 void testCommandProcessor(bool isConsole, string fileName);

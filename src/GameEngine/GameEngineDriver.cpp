@@ -116,7 +116,8 @@ void testGameStates() {
 
 void testStartupPhase() {
     GameEngine * g = new GameEngine();
-    CommandProcessor* processor = new FileCommandProcessorAdapter("setup.txt");
+    FileLineReader * flr = new FileLineReader("setup.txt");
+    CommandProcessor* processor = new FileCommandProcessorAdapter(flr);
     g->startupPhase(processor);
 }
 void testMainGameLoop(){

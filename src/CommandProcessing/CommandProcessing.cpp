@@ -51,8 +51,8 @@ void Command::saveEffect(string eff) {
 /**
  * Override the string to log
 */
-string Command::stringToLog(){ 
-    return "\n\n----------------------------------------- Logger -----------------------------------------\n\nCommand with name: " + name + " was saved with the following effect " +  effect + "\n\n------------------------------------------------------------------------------------------\n\n";
+string Command::stringToLog() {
+    return "\n\n----------------------------------------- Logger -----------------------------------------\n\nCommand with name: " + name + " was saved with the following effect " + effect + "\n\n------------------------------------------------------------------------------------------\n\n";
 }
 
 
@@ -115,7 +115,7 @@ Command* CommandProcessor::getCommand() {
     vector<string> line = split(command, " ");
     string commandName = line[0];
     string commandParam = "";
-    if(line.size() > 1) {
+    if (line.size() > 1) {
         commandParam = line[1];
     }
     //separate the user input if there's more than 1 argument
@@ -185,7 +185,7 @@ void CommandProcessor::saveCommand(Command* c) {
 /**
  * Override the string to log
 */
-string CommandProcessor::stringToLog(){ 
+string CommandProcessor::stringToLog() {
     return "\n\n----------------------------------------- Logger -----------------------------------------\n\n" + commands.back()->getName() + " was saved to the collection of commands\n\n------------------------------------------------------------------------------------------\n\n";
 }
 
@@ -198,6 +198,9 @@ string CommandProcessor::readCommand() {
     cout << "Please enter one of the commands:\n loadmap <mapfile> \n validatemap \n addplayer <playername> \n gamestart \n replay \n quit \n";
     string userInput;
     getline(cin, userInput);
+    if(userInput.empty()) {
+        userInput = "invalid_input";
+    }
 
     cout << "\nYou have entered: " << userInput << "\n\n";
     return userInput;
@@ -205,7 +208,7 @@ string CommandProcessor::readCommand() {
 
 /**
 * Some commands have the following syntax: `command <param>` such as `addplayer lara`
-* we want to create a vector of those words [addplayer, lara] 
+* we want to create a vector of those words [addplayer, lara]
 * We can store `addplayer` in the commandlist and `lara` as a param
 */
 vector<string> CommandProcessor::split(string line, string delim) {
@@ -257,26 +260,27 @@ FileCommandProcessorAdapter::FileCommandProcessorAdapter() : CommandProcessor::C
 /**
  * Constructor with Params
  */
-FileCommandProcessorAdapter::FileCommandProcessorAdapter(string fn) {
-    fileName = fn;
-    inputFile.open(fileName);
+FileCommandProcessorAdapter::FileCommandProcessorAdapter(FileLineReader* flr) {
+    this->flr = flr;
 };
 
 /**
  * Copy constrcutor
  */
 FileCommandProcessorAdapter::FileCommandProcessorAdapter(const FileCommandProcessorAdapter& a) : CommandProcessor::CommandProcessor(a) {
-    fileName = a.fileName;
+    this->flr = a.flr;
 };
 /**
  * Destructor
  */
 FileCommandProcessorAdapter::~FileCommandProcessorAdapter() {
-    inputFile.close();
+    delete flr;
+    // avoid dangeling pointers 
+    flr = NULL;
 };
 
 FileCommandProcessorAdapter& FileCommandProcessorAdapter::operator=(const FileCommandProcessorAdapter& other) {
-    fileName = other.fileName;
+    this->flr = other.flr;
     return *this;
 };
 
@@ -289,9 +293,43 @@ ostream& operator<<(ostream& out, FileCommandProcessorAdapter* c) {
 
 /**
  *   Will read commands from the text file
- *  TODO: should this also save the command or return the list ?
  */
 string FileCommandProcessorAdapter::readCommand() {
+    return flr->readLineFromFile();
+}
+
+/************************************************************* FileLineReader ***************************************************************/
+
+/**
+* Param Constructor
+*/
+FileLineReader::FileLineReader(string fileName) {
+    this->fileName = fileName;
+    // open the file
+    inputFile.open(fileName);
+}
+
+/**
+* Desctuctor
+*/
+FileLineReader::~FileLineReader() {
+    // close the file we opened
+    inputFile.close();
+}
+
+/**
+ * Copy Constructor
+*/
+FileLineReader::FileLineReader(const FileLineReader& f) {
+    // this->fileName = f.fileName;
+    // this->inputFile = f.inputFile;
+    // this->line = f.line;
+}
+
+/**
+ * Read line by line from a file
+*/
+string FileLineReader::readLineFromFile() {
     // Check if the file was successfully opened
     if (!inputFile.is_open()) {
         cout << "...Error: Failed to open the file...\n";
@@ -308,6 +346,27 @@ string FileCommandProcessorAdapter::readCommand() {
             return "";
         }
     };
+}
+
+
+
+/**
+ * Override the stream operator for Command
+ */
+ostream& operator<<(ostream& out, FileLineReader* c) {
+    cout << ".... FileLineReader: reading from " << c->fileName << " ....\n";
+    return out;
+}
+
+
+/**
+* Assignment operator
+*/
+FileLineReader& FileLineReader::operator=(const FileLineReader& f) {
+    // this->fileName = f.fileName;
+    // this->inputFile = f.inputFile;
+    // this->line = f.line;
+    return *this;
 }
 
 /************************************************************* FileCommandProcessorAdapter ***************************************************************/

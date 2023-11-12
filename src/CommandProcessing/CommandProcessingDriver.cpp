@@ -12,7 +12,8 @@ void testCommandProcessor(bool isConsole, string filename = "") {
             return;
         }
         cout << "Reading Commands from " << filename << "\n";
-        processor = new FileCommandProcessorAdapter(filename);
+        FileLineReader* flr = new FileLineReader(filename);
+        processor = new FileCommandProcessorAdapter(flr);
     }
 
     const int testStates = 7;
@@ -47,7 +48,8 @@ void testCommandProcessor(bool isConsole, string filename = "") {
     cout << "\n\n---------> Test 2: Test Game transitions <---------\n\n";
     // delete the old processor to be able to initialize the new processor and open the file to complete the second text
     delete processor;
-    processor = new FileCommandProcessorAdapter("game.txt");
+    FileLineReader* flr = new FileLineReader("game.txt");
+    processor = new FileCommandProcessorAdapter(flr);
     map<string, map<string, Transition*>> transitions = initializeGameTransitionsV2();
     State* state = new State("start");
     int numberOfCommands = 7;

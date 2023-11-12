@@ -556,7 +556,7 @@ void GameEngine::startupPhase(CommandProcessor* processor) {
         cout << "\n .... ✅ Hand distributed .... \n";
         // transition to the game satrt
     }
-    cout << "\n 👍 You're all set up! use the gamestart command to start playing!\n";
+    cout << "\n👍 You're all set up! use the gamestart command to start playing!\n";
     transition(c->getName());
     cout << "\n\n---------> Finish start up phase 🎲 <---------\n\n";
 

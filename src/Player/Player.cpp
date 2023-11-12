@@ -203,13 +203,13 @@ ostream& operator<<(ostream& out, Player* p) {
       int reinforcementCount = p->getReinforcement();
       int territoryCount = p->territories.size();
       if(reinforcementCount > 0){
-        out << " Reinforcements: " << reinforcementCount <<"\n\n";
+        out << "Reinforcements: " << reinforcementCount <<"\n\n";
       }
       if(territoryCount > 0){
-        out << " Info about territories: \n ------------------------\n";
+        out << " Info about territories:\n ------------------------\n";
         p->printTerritories(p->territories);
       };
-    out << "My name is: " <<  p->name << "\n";
+    out << "My name is: " <<  p->name << "\n\n";
      if(territoryCount > 0){
         out << " Info about territories: \n ------------------------\n";
         p->printTerritories(p->territories);
