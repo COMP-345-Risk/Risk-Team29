@@ -24,12 +24,7 @@ class Player {
   State* state;
   string name;
 
-  /**
-   * Helper method to print the list of territories to attack/defended
-   */
   friend ostream& operator<<(ostream& out, Player* o);  // overide Stream insertion operator
-  
-  void printTerritories(vector<Territory*> territories);
 
  public:
   /**
@@ -102,6 +97,11 @@ class Player {
    * Take in an order and add it into the OrderList
    */
   OrdersList* issueOrder(Order* o);
+
+  /**
+   * Helper method to print the list of territories to attack/defended
+   */
+  void printTerritories(vector<Territory*> territories);
 
   //void executeNextOrderAndRemove();
 };

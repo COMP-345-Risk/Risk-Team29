@@ -1,4 +1,5 @@
 #include "Player.h"
+#include<unordered_set>
 
 /************************************************************ Player **************************************************************/
 /**
@@ -168,20 +169,21 @@ vector<Territory*> Player::toDefend() {
  * Returns a random list of territories that the user would like to attack
  */
 vector<Territory*> Player::toAttack() {
-  vector<Territory*> attacked;
+  vector<Territory*> canAttack;
   if (territories.size() == 0) {
     cout << "...There are no territories to attack...\n";
-    return attacked;
+    return canAttack;
   }
-  int index = rand() % territories.size() + 1;
-  
-  for (int i = 0; i < index; i++) {
-    attacked.push_back(territories.at(i));
-  }
-  cout << "\nTerritories to attack:\n-------------------\n";
-  printTerritories(attacked);
 
-  return attacked;
+  for(Territory * territory : territories) {
+    for(Territory* attackOption : territory->getAdjacencyList()) {
+      canAttack.push_back(attackOption);
+    }
+  }
+  unordered_set<Territory*> uniqueSet(canAttack.begin(), canAttack.end());
+  vector<Territory*> uniqueCanAttack(uniqueSet.begin(), uniqueSet.end());
+
+  return uniqueCanAttack;
 }
 
 /**

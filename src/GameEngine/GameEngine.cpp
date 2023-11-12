@@ -186,7 +186,7 @@ void GameEngine::reinforcementPhase() {
         if (numTerritories / 3 <= 3) { // between 0-11 territories owned
             player->addReinforcement(3);
             cout << "Added 3 reinforcments to Player #" << player->getID() << "\n";
-        }else{
+        } else {
             player->addReinforcement(numTerritories / 3); // 12 and over territories owned (round down)
             cout << "Added " << numTerritories / 3 << " reinforcments to Player #" << player->getID() << "\n";
         }
@@ -229,14 +229,42 @@ bool GameEngine::playerOwnsAllTerritoriesInContinent(int cID, Player *p){
  * as  the  player  has  army  units  in their  reinforcement  pool.
  */
 void GameEngine::issueOrdersPhase(){
-    //1. each player takes turns issuing and order
+    OrdersList* ordersToExecute = new OrdersList();
+    //1. each player takes turns Deploying Armies to their territories
     while(hasMoreReinforcementsPlayers()){
         for(auto p: players){
-            //p->issueOrder()
+            //skip players that don't have reinforcements left
+            if(p->getReinforcement() == 0) continue;
+
+            vector<Territory *> canDeploy = p->toDefend();
+            cout << "\nTerritories to Deploy armies to:\n-------------------\n";
+            p->printTerritories(canDeploy);
+
+            cout << "Choose a Territory to Deploy armies to (Please use the number)\n";
+            getline(cin, userInput);
+            int territoryId = stoi(userInput);
+            cout << "How many armies would you like to send? (Available armies: " << p->getReinforcement() << ")\n";
+            getline(cin, userInput);
+            int numArmies = stoi(userInput);
+
+            Deploy* deploy = new Deploy(p, canAttack[territoryId], numArmies);
+            p->issueOrder(deploy);
+        }
+    }
+    //1. each player takes turns Deploying Armies to their territories
+    while(hasMoreOrdersToExecute()) {
+        for(auto p: players) {
+
+
+            cout << "\nTerritories to attack:\n-------------------\n";
+            p->printTerritories(canAttack);
+            string userInput;
+            cout << "Choose a Territory to Attack (Please use the number)\n";
+                getline(cin, userInput);
+                int territoryId = stoi(userInput);
         }
     }
     // this next part happens in player's issueOrder
-    //2. Deploy orders are only done on list form toDefend() from player
     //3. Execute orders are only done on list form toAttack() from player
     //4. Player chooses a card (push to front of list)
 }
