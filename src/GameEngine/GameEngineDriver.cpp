@@ -126,7 +126,7 @@ void testMainGameLoop(){
 
     cout << "********** Preliminary Phase: Create Map and Players *********\n\n"
         
-         << "---------> Load Map: Europe <---------\n\n";
+         << "---------> Load Map: Europe <---------\nx\n";
 
     cout << "...Loading Map of Europe...\n";
     MapLoader* loader = new MapLoader();
@@ -205,7 +205,6 @@ void testMainGameLoop(){
 
     cout << "\n\n---------> Test issueOrdersPhase() <---------\n\n\n";
 
-    
 
 
     
