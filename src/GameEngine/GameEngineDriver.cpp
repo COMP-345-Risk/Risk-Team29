@@ -223,62 +223,111 @@ void testMainGameLoop(){
 void testTournament(int argc, char* argv[]) {
 
     cout << "\n\n---------> TEST TOURNAMENT <---------\n\n";
-    cout << "\n\n---------> TEST 1: Testing Console Input <---------\n\n\n";
+    cout << "\n\n---------> TEST 1: Test Console Input <---------\n\n\n";
 
+    checkConsoleInputTournament(argc, argv);
+
+}   
+
+/**
+ * @brief checks if all arguments are valid based on following criteria:
+ * tournament is first arguemnt
+ * -M <listofmapfiles> has 1-5 different maps
+ * -P <listofplayerstrategies> has 2-4 different stratagies
+ * -G <numberofgames> has one value between 1-5
+ * -D <maxnumberofturns> has one value between 10-50
+ */
+void checkConsoleInputTournament(int argc, char* argv[]){
     // check if console argument "tournament" is valid
-    if(checkIfInsideConsoleIsTournamentMode(argc, argv)){
-        cout <<"...Inside Tournament Mode ...\n\n";
-        
-    }else{
-        cerr <<"... Console argument \"tournament\" is incorrect or does not exist  ...\n"
-            <<"... Exiting testTournmant() ...\n\n";
+    if (checkIfInsideConsoleIsTournamentMode(argc, argv)) {
+        cout << "...Inside Tournament Mode ...\n\n";
+    }
+    else {
+        cerr << "... Console argument \"tournament\" is incorrect or does not exist  ...\n"
+            << "... Exiting checkConsoleInputTournament() ...\n\n";
         return;
     }
 
     // collect arguments and values into a map data type
-    map<string, vector<string> > args_and_values 
+    map<string, vector<string> > args_and_values
         = collectArgumentsAndValuesFromConsole(argc, argv);
 
     //check if arguments are valid (-M, -P, -G, or -D)
-    if(checkIfArgumentsAreValid(args_and_values)){
-        cout <<"... All arguments syntax are valid ...\n\n"; 
-    }else{
+    if (checkIfArgumentsAreValid(args_and_values)) {
+        cout << "... All arguments syntax are valid ...\n\n";
+    }
+    else {
         cerr << "... Error: one of the arguments syntax is invalid ...\n"
-            <<"... Exiting testTournament() ...\n\n";
+            << "... Exiting checkConsoleInputTournament() ...\n\n";
         return;
     }
 
-    // check valid maps
+    // check -M has 1-5 different maps
+    int numMaps = args_and_values["-M"].size();
+    if (!uniqueValues(args_and_values["-M"])) {
+        cerr << "... Error: there are repeating maps ...\n"
+            << "... Exiting checkConsoleInputTournament() ....\n\n";
+        return;
+    }
+    if (numMaps < 1 || numMaps > 5) { // must be between 1-5
+        cerr << "... Error: the number of maps is too large ...\n"
+            << "... Exiting checkConsoleInputTournament() ....\n\n";
+        return;
+    }
     for (const auto& v : args_and_values["-M"]) {
-        if (!(v.compare("Africa") == 0 || v.compare("cliff") == 0 || v.compare("Europe") == 0 || 
-        v.compare("solarSystem") == 0 || v.compare("World") == 0 )) {
+        if (!(v.compare("Africa") == 0 || v.compare("cliff") == 0 || v.compare("Europe") == 0 ||
+            v.compare("solarSystem") == 0 || v.compare("World") == 0)) {
             cerr << "... Error: one of the maps are invalid ...\n"
-                << "... Exiting testTournament() ....\n\n";
+                << "... Exiting checkConsoleInputTournament() ....\n\n";
             return;
         }
     }
 
-    // check valid player stratagies
+    // check valid player has 2-4 different stratagies
+    int numStrat = args_and_values["-P"].size();
+    if (!uniqueValues(args_and_values["-P"])) {
+        cerr << "... Error: there are repeating player stratagies ...\n"
+            << "... Exiting checkConsoleInputTournament() ....\n\n";
+        return;
+    }
+    if (numStrat < 2 || numStrat > 4) { // must be between 1-5
+        cerr << "... Error: the number of player stratagies is too large ...\n"
+            << "... Exiting checkConsoleInputTournament() ....\n\n";
+        return;
+    }
     for (const auto& v : args_and_values["-P"]) {
-        if (!(v.compare("Aggressive") == 0 || v.compare("Benevolent") == 0 || 
-        v.compare("Neutral") == 0 || v.compare("Cheater") == 0 )) {
+        if (!(v.compare("Aggressive") == 0 || v.compare("Benevolent") == 0 ||
+            v.compare("Neutral") == 0 || v.compare("Cheater") == 0)) {
             cerr << "... Error: one of the player stratagies are invalid ...\n"
-                << "... Exiting testTournament() ....\n\n";
+                << "... Exiting checkConsoleInputTournament() ....\n\n";
             return;
         }
     }
 
-    // check valid
-    if(args_and_values["-G"].size() > 1){
+    // check games has one value between 1-5
+    if (args_and_values["-G"].size() > 1) {
         cerr << "... Error: number of games can only have 1 value ...\n"
-            << "... Exiting testTournament() ....\n\n";
-            return;
+            << "... Exiting checkConsoleInputTournament() ....\n\n";
+        return;
     }
     int numGames = stoi(args_and_values["-G"][0]);
-    if(numGames < 1 || numGames > 5){ // must be between 1-5
+    if (numGames < 1 || numGames > 5) { // must be between 1-5
         cerr << "... Error: the number of games is too large ...\n"
-            << "... Exiting testTournament() ....\n\n";
-            return;
+            << "... Exiting checkConsoleInputTournament() ....\n\n";
+        return;
+    }
+
+    // check number turns has one value between 10-50
+    if (args_and_values["-D"].size() > 1) {
+        cerr << "... Error: number of turns can only have 1 value ...\n"
+            << "... Exiting checkConsoleInputTournament() ....\n\n";
+        return;
+    }
+    int numTurns = stoi(args_and_values["-D"][0]);
+    if (numTurns < 10 || numTurns > 50) { // must be between 1-5
+        cerr << "... Error: the number of turns is too large or small ...\n"
+            << "... Exiting checkConsoleInputTournament() ....\n\n";
+        return;
     }
 
     // Display arguments and values
@@ -357,4 +406,25 @@ bool checkIfArgumentsAreValid(map<string, vector<string> > args_and_values){
         }
     }
     return true;
+}
+
+/**
+ * @brief checks if vector values are unqique
+ * 
+ * @param v 
+ * @return true 
+ * @return false 
+ */
+bool uniqueValues(vector<string> values){
+    if(values.empty()) {return false;} // return false if empty
+    bool unique = true;
+    for (int i = 0; i < values.size(); ++i) {
+        for (int j = i + 1; j < values.size(); ++j){
+            if (values[i].compare(values[j])==0) {
+                unique = false;
+                break;
+            }
+        }
+    }
+    return unique;
 }
