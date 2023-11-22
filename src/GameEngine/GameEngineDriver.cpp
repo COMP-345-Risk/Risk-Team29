@@ -241,11 +241,11 @@ void testTournament(int argc, char* argv[]) {
         return;
     }
 
+
     //check valid maps
-    cout  << args_and_values.size() << "\n";
-    cout << "arg position 0 is " << args_and_values.begin()->first <<"\n";
 
     // Display arguments and values
+    // NOTE: map organizes keys alphabetically
     cout << "... Listing the arguments and their values ...\n";
     for (const auto& arg : args_and_values) {
         cout << arg.first << " : ";
@@ -286,7 +286,7 @@ map<string, vector<string> > collectArgumentsAndValuesFromConsole(int argc, char
     for (int i = 2; i < argc; ++i) {
         string arg = argv[i];
 
-        if (arg.size() > 0 && arg[0] == '-') { // check not empty and equal to "-"
+        if (arg.size() > 0 && arg[0] == '-') { // check NOT empty and equal to "-"
             vector<string> values;
 
             ++i; // move one position to get letter arg Ex: M, P, D or G
@@ -296,8 +296,8 @@ map<string, vector<string> > collectArgumentsAndValuesFromConsole(int argc, char
                 values.push_back(argv[i]);
                 ++i;
             }
-
-            args_and_values[arg] = values;
+            
+            args_and_values.insert(pair<string, vector<string> >(arg, values));
 
             // Decrement to account for the next argument with "-"
             --i;
