@@ -212,7 +212,14 @@ void testMainGameLoop(){
 
 /******************************************** Test Tournament A3 **************************************************/
 
-
+/**
+ * @brief runs tournaments based on following console inputs
+ * tournament
+ * -M <listofmapfiles>  Ex: -M Africa Europe solarSystem
+ * -P <listofplayerstrategies>  Ex: -P Aggressive Benevolent Neutral Cheater
+ * -G <numberofgames> Ex: -G 2
+ * -D <maxnumberofturns> Ex: -D 10
+ */
 void testTournament(int argc, char* argv[]) {
 
     cout << "\n\n---------> TEST TOURNAMENT <---------\n\n";
@@ -241,8 +248,38 @@ void testTournament(int argc, char* argv[]) {
         return;
     }
 
+    // check valid maps
+    for (const auto& v : args_and_values["-M"]) {
+        if (!(v.compare("Africa") == 0 || v.compare("cliff") == 0 || v.compare("Europe") == 0 || 
+        v.compare("solarSystem") == 0 || v.compare("World") == 0 )) {
+            cerr << "... Error: one of the maps are invalid ...\n"
+                << "... Exiting testTournament() ....\n\n";
+            return;
+        }
+    }
 
-    //check valid maps
+    // check valid player stratagies
+    for (const auto& v : args_and_values["-P"]) {
+        if (!(v.compare("Aggressive") == 0 || v.compare("Benevolent") == 0 || 
+        v.compare("Neutral") == 0 || v.compare("Cheater") == 0 )) {
+            cerr << "... Error: one of the player stratagies are invalid ...\n"
+                << "... Exiting testTournament() ....\n\n";
+            return;
+        }
+    }
+
+    // check valid
+    if(args_and_values["-G"].size() > 1){
+        cerr << "... Error: number of games can only have 1 value ...\n"
+            << "... Exiting testTournament() ....\n\n";
+            return;
+    }
+    int numGames = stoi(args_and_values["-G"][0]);
+    if(numGames < 1 || numGames > 5){ // must be between 1-5
+        cerr << "... Error: the number of games is too large ...\n"
+            << "... Exiting testTournament() ....\n\n";
+            return;
+    }
 
     // Display arguments and values
     // NOTE: map organizes keys alphabetically

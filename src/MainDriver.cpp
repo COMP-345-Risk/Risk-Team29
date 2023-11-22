@@ -37,20 +37,6 @@ int main(int argc, char* argv[])
     /*
     * Assignment 3
     */
-    // cout << "Number of arguments: " << argc << endl;
-    // for (int i = 0; i < argc; ++i) {
-    //     cout << "Argument " << i << ": " << argv[i] << endl;
-    // }
-
-
-    /**
-     * @brief checking if console has proper input for console
-     * tournament 
-     * -M <listofmapfiles>  Ex: -M Africa Europe solarSystem
-     * -P <listofplayerstrategies>  Ex: -P Aggressive Benevolent Neutral Cheater
-     * -G <numberofgames> Ex: -G 2
-     * -D <maxnumberofturns> Ex: -D 10
-     */
-
+   
     testTournament(argc, argv);
 }
