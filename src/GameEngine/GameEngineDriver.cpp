@@ -207,9 +207,117 @@ void testMainGameLoop(){
     cout << "\n\n---------> Test issueOrdersPhase() <---------\n\n\n";
 
 
+}
 
+
+/******************************************** Test Tournament A3 **************************************************/
+
+
+void testTournament(int argc, char* argv[]) {
+
+    cout << "\n\n---------> TEST TOURNAMENT <---------\n\n";
+    cout << "\n\n---------> TEST 1: Testing Console Input <---------\n\n\n";
+
+    // check if console argument "tournament" is valid
+    if(checkIfInsideConsoleIsTournamentMode(argc, argv)){
+        cout <<"...Inside Tournament Mode ...\n\n";
+        
+    }else{
+        cerr <<"... Console argument \"tournament\" is incorrect or does not exist  ...\n"
+            <<"... Exiting testTournmant() ...\n\n";
+        return;
+    }
+
+    // collect arguments and values into a map data type
+    map<string, vector<string> > args_and_values 
+        = collectArgumentsAndValuesFromConsole(argc, argv);
+
+    //check if arguments are valid (-M, -P, -G, or -D)
+    if(checkIfArgumentsAreValid(args_and_values)){
+        cout <<"... All arguments syntax are valid ...\n\n"; 
+    }else{
+        cerr << "... Error: one of the arguments syntax is invalid ...\n"
+            <<"... Exiting testTournament() ...\n\n";
+        return;
+    }
+
+    //check valid maps
+    cout  << args_and_values.size() << "\n";
+    cout << "arg position 0 is " << args_and_values.begin()->first <<"\n";
+
+    // Display arguments and values
+    cout << "... Listing the arguments and their values ...\n";
+    for (const auto& arg : args_and_values) {
+        cout << arg.first << " : ";
+        for (const auto& v : arg.second) {
+            cout << v << " ";
+        }
+        cout << "\n";
+    }
+
+}
+
+/**
+ * @brief check if first console argument is tournament
+ * 
+ */
+bool checkIfInsideConsoleIsTournamentMode(int argc, char* argv[]) {
+    if (argc > 1) {
+        // confirm console is tournment
+        string tournament = "tournament";
+        if (tournament.compare(argv[1]) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * @brief store arguements and respective values inside map data type
+ * 
+ * @param argc 
+ * @param argv 
+ * @return map<string, vector<string> > 
+ */
+map<string, vector<string> > collectArgumentsAndValuesFromConsole(int argc, char* argv[]) {
+    map<string, vector<string> > args_and_values;
+
+    // start at arg[2] because confirmed arg[1] is tournament
+    for (int i = 2; i < argc; ++i) {
+        string arg = argv[i];
+
+        if (arg.size() > 0 && arg[0] == '-') { // check not empty and equal to "-"
+            vector<string> values;
+
+            ++i; // move one position to get letter arg Ex: M, P, D or G
+
+            // Collect all consecutive values until the next argument or end of input
+            while (i < argc && argv[i][0] != '-') {
+                values.push_back(argv[i]);
+                ++i;
+            }
+
+            args_and_values[arg] = values;
+
+            // Decrement to account for the next argument with "-"
+            --i;
+        }
+    }
+    return args_and_values;
+}
+
+/**
+ * @brief return true if console arguments are of valid syntax (-M, -P, -D or -G)
+ * 
+ */
+bool checkIfArgumentsAreValid(map<string, vector<string> > args_and_values){
     
-
-
-
+    for (const auto& arg : args_and_values) {
+        //check if argument is -M, -P, -D or -G
+        if (!(arg.first.compare("-M") == 0 || arg.first.compare("-P") == 0 
+                || arg.first.compare("-G") == 0 || arg.first.compare("-D") == 0) ) {
+            return false;
+        }
+    }
+    return true;
 }
