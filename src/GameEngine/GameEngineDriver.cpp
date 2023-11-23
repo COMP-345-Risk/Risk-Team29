@@ -227,6 +227,58 @@ void testTournament(int argc, char* argv[]) {
 
     checkConsoleInputTournament(argc, argv);
 
+    cout << "\n\n---------> TEST 2: Tournament Board <---------\n\n\n";
+
+    cout <<"... Storing argument values in map...\n\n";
+    map<string, vector<string> > args_and_values
+        = collectArgumentsAndValuesFromConsole(argc, argv);
+
+    cout << "... Creating tournament board as map of maps...\n\n";
+    map<string, map<string,string> > tournBoard;
+    
+    vector<string> rows;
+    vector<string> columns;
+    
+    // fill rows with maps
+    for (string row : args_and_values["-M"]) {
+        rows.push_back(row);
+    }
+
+    // fill columns with game #'s
+    string sGame;
+    for (int i = 0; i < stoi(args_and_values["-G"][0]); i++) {
+        sGame = "Game ";
+        columns.push_back(sGame.append(to_string(i+1)));
+    }
+
+    // fill board
+    int result = 0;
+    string sResult;
+    for (auto row : rows) {
+        for (auto col : columns) {
+            sResult = "Result ";
+            tournBoard[row][col] = sResult.append(to_string(result));
+            result ++;
+        }
+    }
+
+    // print board
+    // print first row
+    cout << "| " << setfill(' ') << setw(14) << "| ";
+    for(auto col : columns){
+        cout << setfill(' ') << setw(12) << col << "| ";
+    }
+    cout <<"\n";
+
+    //print every other row
+    for (const auto& row : rows) {
+        cout << "| " << setfill(' ') << setw(12) << row << "| ";
+        for (const auto& col : columns) {
+            cout << setfill(' ') << std::setw(12) << tournBoard[row][col] << "| ";
+        }
+        cout << "\n";
+    }
+
 }   
 
 /**
