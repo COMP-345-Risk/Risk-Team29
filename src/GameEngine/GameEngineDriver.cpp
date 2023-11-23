@@ -2,6 +2,8 @@
 #include "../Player/Player.h"
 #include "../Map/Map.h"
 
+#include <iostream>
+
 
 void testGameStates() {
 
@@ -223,9 +225,105 @@ void testMainGameLoop(){
 void testTournament(int argc, char* argv[]) {
 
     cout << "\n\n---------> TEST TOURNAMENT <---------\n\n";
+
     cout << "\n\n---------> TEST 1: Test Console Input <---------\n\n\n";
 
+    cout <<"---- Scenario 1: actual arguments from command line -----\n\n";
+
+    cout << "... Checking arguments in command line ...\n\n";
+    cout << "***** Calling checkConsoleInputTournament() *****\n\n";
     checkConsoleInputTournament(argc, argv);
+    cout << "\n\n";
+
+    cout << "---- Scenario 2: Repeating Map -----\n\n";
+
+    cout << "...Creating BAD -M with repeating maps \"Europe\" ...\n\n";
+    char runCommand[] = "Users/.../ ";
+    char tournament[] = "tournament";
+    char optionM[] = "-M", Africa[] = "Africa", Europe[] = "Europe", solarSystem[] = "solarSystem", Europe2[] = "Europe";
+    char optionP[] = "-P", Aggressive[] = "Aggressive", Benevolent[] = "Benevolent", Neutral[] = "Neutral", Cheater[] = "Cheater";
+    char optionG[] = "-G", number2[] = "2";
+    char optionD[] = "-D", number10[] = "10";
+
+    char* tArgv[] = {
+        runCommand, 
+        tournament,
+        optionM, Africa, Europe, solarSystem, Europe2,
+        optionP, Aggressive, Benevolent, Neutral, Cheater,
+        optionG, number2,
+        optionD, number10,
+        nullptr
+    };
+
+    cout <<"... Printing arguments and values... \n";
+    int tArgc = 1;
+    while (tArgv[tArgc] != nullptr){
+        cout << tArgv[tArgc] <<" " ;
+        tArgc++;
+    }
+    cout <<"\n\n";
+
+    cout << "***** Calling checkConsoleInputTournament() *****\n\n";
+    checkConsoleInputTournament(tArgc, tArgv);
+    cout << "\n\n";
+
+    cout << "---- Scenario 3: Wrong player stratagy -----\n\n";
+
+    cout << "...Creating BAD -P with misseplt strategy \"Cheaterrrrr\" ...\n\n";
+    char Cheater3[] = "Cheaterrrrr";
+
+    char* t3Argv[] = {
+        runCommand, 
+        tournament,
+        optionM, Africa, Europe, solarSystem,
+        optionP, Aggressive, Benevolent, Neutral, Cheater3,
+        optionG, number2,
+        optionD, number10,
+        nullptr
+    };
+
+    cout <<"... Printing arguments and values... \n";
+    int t3Argc = 1;
+    while (t3Argv[t3Argc] != nullptr) {
+        cout << t3Argv[t3Argc] << " ";
+        t3Argc++;
+    }
+    cout <<"\n\n";
+
+    cout << "***** Calling checkConsoleInputTournament() *****\n\n";
+    checkConsoleInputTournament(t3Argc, t3Argv);
+    cout <<"\n\n";
+
+    cout << "---- Scenario 4: Wrong number of -G games -----\n\n";
+
+    cout << "...Creating BAD -G with \"20\" Games ...\n\n";
+    char number20[] = "20";
+
+    char* t4Argv[] = {
+        runCommand,
+        tournament,
+        optionM, Africa, Europe, solarSystem,
+        optionP, Aggressive, Benevolent, Neutral, Cheater,
+        optionG, number20,
+        optionD, number10,
+        nullptr
+    };
+
+    cout << "... Printing arguments and values... \n";
+    int t4Argc = 1;
+    while (t4Argv[t4Argc] != nullptr) {
+        cout << t4Argv[t4Argc] << " ";
+        t4Argc++;
+    }
+    cout << "\n\n";
+
+    cout << "***** Calling checkConsoleInputTournament() *****\n\n";
+    checkConsoleInputTournament(t4Argc, t4Argv);
+    cout << "\n\n";
+
+
+
+
 
     cout << "\n\n---------> TEST 2: Tournament Board <---------\n\n\n";
 
@@ -303,6 +401,16 @@ void checkConsoleInputTournament(int argc, char* argv[]){
     // collect arguments and values into a map data type
     map<string, vector<string> > args_and_values
         = collectArgumentsAndValuesFromConsole(argc, argv);
+    
+    //check all arguments are present
+    if(checkIfAllArgumentsArePresent(args_and_values)){
+        cout << "... All arguments are present ...\n\n";
+    }
+    else{
+        cerr << "... One of the arguments is missing ...\n\n"
+            << "... Exiting checkConsoleInputTournament() ...\n\n";
+        return;
+    }
 
     //check if arguments are valid (-M, -P, -G, or -D)
     if (checkIfArgumentsAreValid(args_and_values)) {
@@ -442,6 +550,28 @@ map<string, vector<string> > collectArgumentsAndValuesFromConsole(int argc, char
         }
     }
     return args_and_values;
+}
+
+/**
+ * @brief returns true if all arguments are present -M, -P, -D or -G
+ */
+bool checkIfAllArgumentsArePresent(map<string, vector<string> > args_and_values) {
+    bool argM = false;
+    bool argP = false;
+    bool argD = false;
+    bool argG = false;
+    for (const auto& arg : args_and_values) {
+        if ((arg.first.compare("-M") == 0))
+            argM=true;
+        if ((arg.first.compare("-P") == 0))
+            argP=true;
+        if ((arg.first.compare("-D") == 0)) 
+            argD=true;
+        if ((arg.first.compare("-G") == 0))
+            argG=true;
+
+    }
+    return (argM && argP && argD && argG);
 }
 
 /**
