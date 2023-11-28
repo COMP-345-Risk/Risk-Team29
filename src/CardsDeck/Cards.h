@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include "../Player/Player.h"
 #include "../OrdersList/Orders.h"
 
 using namespace std;
@@ -49,6 +50,8 @@ public:
     * The isValidCardType method validates the authenticity of card type
     */
     static bool isValidCardType(const string &value);
+
+    Order* play(Player* player);
 
 protected:
     string *type;
@@ -161,6 +164,11 @@ public:
     * The addCard method adds a new card from the deck to the player's hand
     */
     void addCard(Card *newHandCard) override;
+   
+    /**
+    * The getCard method returns a card from the player's hand
+    */
+    Card* getCard(int index);
 
     /**
     * The play method removes a card from hand, creates a new order, and returns card to deck of origin
