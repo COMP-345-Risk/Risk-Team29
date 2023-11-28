@@ -151,7 +151,7 @@ private:
     vector<State*> gameStates; // all the game states
     State* currentState; // current state of the player
     map<string, map<string, Transition*>> gameTransitions;
-    Map* map;
+    Map* loadedMap;
     vector<Player*> players;
     friend ostream& operator<<(ostream& out, GameEngine* ge);  // overide Stream insertion operator
 };

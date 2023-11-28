@@ -8,6 +8,8 @@
 * 'cardTypes' vector holds all possible card types
 */
 const vector<string> Card::cardTypes = {"Bomb", "Reinforcement", "Blockade", "Airlift", "Diplomacy"};
+// forward declaration
+class Player;
 
 /**
 * Default constructor
@@ -70,6 +72,59 @@ bool Card::isValidCardType(const string &value) {
         }
     }
     return false;
+}
+
+Order* Card::play(Player* player) {
+    if (type->compare("Bomb") == 0) {
+        cout << "Which Territory would you like to Bomb?\n";
+        vector<Territory*> canAttack = player->toAttack();
+        string userInput;
+        getline(cin, userInput);
+        int targetTerritory = stoi(userInput);
+        Order *order = new Bomb(player, canAttack.at(targetTerritory));
+        return order;
+    } else if (type->compare("Reinforcement") == 0) {
+        cout << "Which Territory would you like to add 5 reinforcements to?\n";
+        vector<Territory*> canDefend = player->toDefend();
+        string userInput;
+        getline(cin, userInput);
+        int destinationTerritory = stoi(userInput);
+        Order *order = new Deploy(player, canDefend.at(destinationTerritory), 5);
+        return order;
+    } else if (type->compare("Blockade") == 0) {
+        cout << "Which Territory would you like to Blockade?\n";
+        vector<Territory*> canDefend = player->toDefend();
+        string userInput;
+        getline(cin, userInput);
+        int destinationTerritory = stoi(userInput);
+        // todo make neutralPlayer just be no player (can we do this?)
+        Order *order = new Blockade(player,player,canDefend.at(destinationTerritory));
+        return order;
+    } else if (type->compare("Airlift") == 0) {
+        cout << "Which Territory would you like to Airlift TO?\n";
+        vector<Territory*> canDefend = player->toDefend();
+        string userInput;
+        getline(cin, userInput);
+        int destinationTerritory = stoi(userInput);
+        cout << "Which Territory would you like to Airlift FROM?\n";
+        player->printTerritories(canDefend);
+        getline(cin, userInput);
+        int fromTerritory = stoi(userInput);
+        cout << "How many armies would you like to Airlift? (max: " << canDefend.at(fromTerritory)->getArmyCount() << "\n";
+        getline(cin, userInput);
+        int armiesToLift = stoi(userInput);
+        // todo make neutralPlayer just be no player (can we do this?)
+        Order *order = new Airlift(player, canDefend.at(destinationTerritory), canDefend.at(fromTerritory), armiesToLift);
+        return order;
+    } else if (type->compare("Diplomacy") == 0) {
+        cout << "Choose another player to Negotiate with\n";
+        //todo make players static on the GameEngine to be able to access it here.
+        Order *order = new Negotiate(player, player);
+        return order;
+    } else {
+        cout << "Invalid card type: " << type << "\n";
+        return NULL;
+    }
 }
 
 /**
@@ -272,6 +327,10 @@ void Hand::addCard(Card *newHandCard) {
     hand.push_back(newHandCard);
 }
 
+Card* Hand::getCard(int index) {
+    return hand.at(index);
+}
+
 /**
 * Play method takes card type and deck of origin as arguments
  * Declares a list of orders
@@ -279,7 +338,7 @@ void Hand::addCard(Card *newHandCard) {
  * Once a card is player, we create the order, remove the card from hand and return it back to the deck
 */
 void Hand::play(string &playedCardType, Deck *returningDeck) {
-    OrdersList *OL = new OrdersList(); /// <summary> declare a list of orders
+    OrdersList *OL = new OrdersList(); // declare a list of orders
     auto it = find_if(hand.begin(), hand.end(), [&playedCardType](const Card *card) {
         return card->getType() == playedCardType;
     });
