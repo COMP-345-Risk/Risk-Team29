@@ -9,11 +9,13 @@
 #include "../GameEngine/GameEngine.h"
 #include "../Map/Map.h"
 #include "../OrdersList/Orders.h"
+#include "../Strategies/PlayerStrategies.h"
 
 using namespace std;
 
 // forward declaration
 class Hand;
+class PlayerStrategy;
 /************************************************************ Player **************************************************************/
 
 class Player {
@@ -25,6 +27,7 @@ class Player {
   OrdersList* orderList;
   State* state;
   string name;
+  PlayerStrategy * ps;
 
   friend ostream& operator<<(ostream& out, Player* o);  // overide Stream insertion operator
 
@@ -32,7 +35,10 @@ class Player {
   /**
    * Constructor with with an argument list
    */
+  Player(vector<Territory*>, Hand*, OrdersList*, int id, State*, PlayerStrategy * ps);
+  
   Player(vector<Territory*>, Hand*, OrdersList*, int id, State*);
+
 
   /**
    * Default Constructor

@@ -5,6 +5,7 @@
 #include "CardsDeck/Cards.h"
 #include "CommandProcessing/CommandProcessing.h"
 #include "GameEngine/GameEngine.h"
+#include "Strategies/PlayerStrategies.h"
 
 int main(int argc, char* argv[])
 {
@@ -21,7 +22,7 @@ int main(int argc, char* argv[])
     * Assignment 2
     */
     // testOrderExecution();
-    testStartupPhase();
+    // testStartupPhase();
     // testLoggingObserver();
     // testMainGameLoop();
     // argv[0] is the name of the program hence the second param will be what we need (flag)
@@ -31,4 +32,9 @@ int main(int argc, char* argv[])
     //     testCommandProcessor(isCommandLine, argc == 3 ? argv[2] : "");
     //     return 0;
     // }
+
+    /**
+     * Assignement 3
+    */
+    testPlayerStrategies();
 }

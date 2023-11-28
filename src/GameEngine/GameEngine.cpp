@@ -112,7 +112,7 @@ GameEngine::GameEngine(Map* map, vector<Player*> players) {
     this->gameStates = initializeGameStates();
     this->currentState = gameStates[0];
     this->gameTransitions = initializeGameTransitionsV2();
-    this->loadedMap = loadedMap;
+    this->loadedMap = map;
     this->players = players;
 }
 
