@@ -6,6 +6,7 @@
 #include "CommandProcessing/CommandProcessing.h"
 #include "GameEngine/GameEngine.h"
 #include "Strategies/PlayerStrategies.h"
+#include "Tournament/TournamentDriver.h"
 
 using namespace std;
 
@@ -38,6 +39,6 @@ int main(int argc, char* argv[])
     /*
     * Assignment 3
     */
+    //testPlayerStrategies();
     testTournament(argc, argv);
-    testPlayerStrategies();
 }

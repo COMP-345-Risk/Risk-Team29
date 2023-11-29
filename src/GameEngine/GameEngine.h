@@ -175,12 +175,7 @@ void testMainGameLoop(); //A2
 void testGameStates();
 void testStartupPhase();
 
-void testTournament(int argc, char* argv[]); //A3
-void checkConsoleInputTournament(int argc, char* argv[]);
-bool checkIfInsideConsoleIsTournamentMode(int argc, char* argv[]);
-map<string, vector<string> > collectArgumentsAndValuesFromConsole(int argc, char* argv[]);
-bool checkIfAllArgumentsArePresent(map<string, vector<string> > args_and_values);
-bool checkIfArgumentsAreValid(map<string, vector<string> > args_and_values);
-bool uniqueValues(vector<string> values);
-
 map<string, map<string, Transition*> > initializeGameTransitionsV2();
+
+
+
