@@ -1,9 +1,24 @@
 #include "Player.h"
+#include<unordered_set>
 
 /************************************************************ Player **************************************************************/
 /**
  * Constructor with with an argument list
  */
+Player::Player(vector<Territory*> t, Hand* h, OrdersList* o, int id, State* s, PlayerStrategy * strategy) {
+  territories = t;
+  hand = h;
+  orderList = o;
+  this->id = id;
+  state = s;
+  reinforcements = 0;
+  this->ps = strategy;
+
+  // if seed is set to 1, the generator is reinitialized to its initial value
+  // and produces the same values as before any call to rand or srand
+  srand((unsigned)time(NULL));
+}
+
 Player::Player(vector<Territory*> t, Hand* h, OrdersList* o, int id, State* s) {
   territories = t;
   hand = h;
@@ -11,13 +26,14 @@ Player::Player(vector<Territory*> t, Hand* h, OrdersList* o, int id, State* s) {
   this->id = id;
   state = s;
   reinforcements = 0;
+  ps = new Human();
 
   // if seed is set to 1, the generator is reinitialized to its initial value
   // and produces the same values as before any call to rand or srand
   srand((unsigned)time(NULL));
 }
 
-void Player::setName(string n){
+void Player::setName(string n) {
   name = n;
 }
 
@@ -53,7 +69,8 @@ Player::Player(const Player& p) {
   // create a new state
   if (p.state == NULL) {
     state = NULL;
-  } else {
+  }
+  else {
     state = new State(*p.state);
   }
 
@@ -62,6 +79,8 @@ Player::Player(const Player& p) {
 
   // its not a pointer, so we just increase the ID 1
   id = p.id + 1;
+
+  this->ps = p.ps;
 };
 
 /**
@@ -81,39 +100,44 @@ Player::~Player() {
 
   delete state;
   state = NULL;
+
+  delete ps;
+  ps = NULL;
 }
 
 /**
  * Default Constructor
  */
-Player::Player(){
+Player::Player() {
   hand = new Hand();
   reinforcements = 0;
+  // strategy will be human by default
+  ps = new Human();
 };
 
 /**
  * Param Constructor
  */
-Player::Player(int i) : Player(){ id  = i;};
+Player::Player(int i) : Player() { id = i; };
 
-int Player::getID(){ return this->id;}
+int Player::getID() { return this->id; }
 
-int Player::getReinforcement(){ return this->reinforcements;}
+int Player::getReinforcement() { return this->reinforcements; }
 
 void Player::setReinforcement(int r) { this->reinforcements = r; }
 
 void Player::addReinforcement(int r) { this->reinforcements = this->reinforcements + r; }
 
-void Player::subtractReinforcemnts(int r) { this->reinforcements = this->reinforcements-r;}
+void Player::subtractReinforcemnts(int r) { this->reinforcements = this->reinforcements - r; }
 
-vector<Territory*> Player::getTerritories(){ return this->territories;}
+vector<Territory*> Player::getTerritories() { return this->territories; }
 
-void Player::addTerritory(Territory* t){ 
+void Player::addTerritory(Territory* t) {
   t->setOwnerId(this->id);
   this->territories.push_back(t);
 }
 
-void Player::removeTerritory(Territory* t){
+void Player::removeTerritory(Territory* t) {
   auto it = find(territories.begin(), territories.end(), t);
   territories.erase(it);
 }
@@ -121,77 +145,50 @@ void Player::removeTerritory(Territory* t){
 /**
  * @brief deletes territory and sets
  */
-void Player::eraseTerritory(Territory* t){
+void Player::eraseTerritory(Territory* t) {
   if (territories.size() == 0) {
     cout << "Error: Territroy list is empty\n";
     return;
   }
-  if(!ownsTerritory(t)){
-    cout <<"Error: Player does not own Territory\n";
+  if (!ownsTerritory(t)) {
+    cout << "Error: Player does not own Territory\n";
     return;
   }
   t->setOwnerId(0); // resets value that map points too
   t->setArmyCount(0); // resets value that map points too
-  auto it = find(territories.begin(),territories.end(), t);
-  territories.erase(it); 
+  auto it = find(territories.begin(), territories.end(), t);
+  territories.erase(it);
 }
 
 OrdersList* Player::getOrdersList() { return this->orderList; }
 
 State* Player::getState() { return this->state; }
 
-bool Player::ownsTerritory(Territory *t){ return t->getOwnerId() == this->id;}
+bool Player::ownsTerritory(Territory* t) { return t->getOwnerId() == this->id; }
 
-Hand* Player::getHand(){ return this->hand;}
+Hand* Player::getHand() { return this->hand; }
 
 /**
- * Returns a random list of territories that are assigned to the user which they
- * would like to defend
+ * Returns a list of territories that are assigned to the user which they
+ * would like to defend from other players
  */
 vector<Territory*> Player::toDefend() {
-  vector<Territory*> defended;
-  // if no territories were init
-  if (territories.size() == 0) {
-    cout << "...There are no territories to defend...\n";
-    return defended;
-  }
-  int index = rand() % territories.size() + 1;
-  for (int i = 0; i < index; i++) {
-    defended.push_back(territories.at(i));
-  }
-  cout << "\nTerritories to defend:\n -------------------\n";
-  printTerritories(defended);
-  return defended;
+  return ps->toDefend(this);
 }
 
 /**
- * Returns a random list of territories that the user would like to attack
+ * Returns a list of territories that the user could attack
  */
 vector<Territory*> Player::toAttack() {
-  vector<Territory*> attacked;
-  if (territories.size() == 0) {
-    cout << "...There are no territories to attack...\n";
-    return attacked;
-  }
-  int index = rand() % territories.size() + 1;
-  
-  for (int i = 0; i < index; i++) {
-    attacked.push_back(territories.at(i));
-  }
-  cout << "\nTerritories to attack:\n-------------------\n";
-  printTerritories(attacked);
-
-  return attacked;
+  return ps->toAttack(this);
 }
 
 /**
  * Take in an order and add it into the OrderList
  */
 OrdersList* Player::issueOrder(Order* o) {
-  orderList->addOrder(o);
-  cout << "...Pushed a new order to orderList...\n";
-  cout << "New order id: " << o->getOrderID() << "\n\n";
-  return orderList;
+ ps->issueOrder(this);
+ return orderList; // doesnt need to return, no time to refactor
 }
 
 /**
@@ -199,25 +196,21 @@ OrdersList* Player::issueOrder(Order* o) {
  */
 ostream& operator<<(ostream& out, Player* p) {
   out << "Printing info about player ID: " << p->id
-      << "\n********************************\n\n";
-      int reinforcementCount = p->getReinforcement();
-      int territoryCount = p->territories.size();
-      if(reinforcementCount > 0){
-        out << "Reinforcements: " << reinforcementCount <<"\n\n";
-      }
-      if(territoryCount > 0){
-        out << " Info about territories:\n ------------------------\n";
-        p->printTerritories(p->territories);
-      };
-    out << "My name is: " <<  p->name << "\n\n";
-     if(territoryCount > 0){
-        out << " Info about territories: \n ------------------------\n";
-        p->printTerritories(p->territories);
-      };
+    << "\n********************************\n\n";
+  int reinforcementCount = p->getReinforcement();
+  int territoryCount = p->territories.size();
+  if (reinforcementCount > 0) {
+    out << "Reinforcements: " << reinforcementCount << "\n\n";
+  }
+  out << "My name is: " << p->name << "\n\n";
+  if (territoryCount > 0) {
+    out << " Info about territories: \n ------------------------\n";
+    p->printTerritories(p->territories);
+  };
 
-      //  if(!(p->orderList == NULL)){
-      //   out << p->orderList;
-      // };
+  //  if(!(p->orderList == NULL)){
+  //   out << p->orderList;
+  // };
   out << p->hand;
   // !! dont need state in player
   // out << "\nCurrent player's state: "

@@ -9,9 +9,13 @@
 #include "../GameEngine/GameEngine.h"
 #include "../Map/Map.h"
 #include "../OrdersList/Orders.h"
+#include "../Strategies/PlayerStrategies.h"
 
 using namespace std;
 
+// forward declaration
+class Hand;
+class PlayerStrategy;
 /************************************************************ Player **************************************************************/
 
 class Player {
@@ -23,19 +27,18 @@ class Player {
   OrdersList* orderList;
   State* state;
   string name;
+  PlayerStrategy * ps;
 
-  /**
-   * Helper method to print the list of territories to attack/defended
-   */
   friend ostream& operator<<(ostream& out, Player* o);  // overide Stream insertion operator
-  
-  void printTerritories(vector<Territory*> territories);
 
  public:
   /**
    * Constructor with with an argument list
    */
+  Player(vector<Territory*>, Hand*, OrdersList*, int id, State*, PlayerStrategy * ps);
+  
   Player(vector<Territory*>, Hand*, OrdersList*, int id, State*);
+
 
   /**
    * Default Constructor
@@ -102,6 +105,11 @@ class Player {
    * Take in an order and add it into the OrderList
    */
   OrdersList* issueOrder(Order* o);
+
+  /**
+   * Helper method to print the list of territories to attack/defended
+   */
+  void printTerritories(vector<Territory*> territories);
 
   //void executeNextOrderAndRemove();
 };

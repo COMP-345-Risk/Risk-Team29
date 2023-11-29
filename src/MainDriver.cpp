@@ -5,6 +5,7 @@
 #include "CardsDeck/Cards.h"
 #include "CommandProcessing/CommandProcessing.h"
 #include "GameEngine/GameEngine.h"
+#include "Strategies/PlayerStrategies.h"
 
 using namespace std;
 
@@ -26,7 +27,7 @@ int main(int argc, char* argv[])
     // testStartupPhase();
     // testLoggingObserver();
     // testMainGameLoop();
-    // // argv[0] is the name of the program hence the second param will be what we need (flag)
+    // argv[0] is the name of the program hence the second param will be what we need (flag)
     // if (argc > 1) {
     //     string flag = argv[1];
     //     bool isCommandLine = flag.compare("-console") == 0;
@@ -37,6 +38,6 @@ int main(int argc, char* argv[])
     /*
     * Assignment 3
     */
-   
     testTournament(argc, argv);
+    testPlayerStrategies();
 }
