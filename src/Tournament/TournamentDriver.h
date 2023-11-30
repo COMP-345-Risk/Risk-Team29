@@ -21,3 +21,10 @@ void testBoard(int argc, char* argv[]);
 
 // test 3
 vector<Player*> createTwoPlayers();
+
+// test 4
+void testFullTournament(int argc, char* argv[]);
+map<string, map<string, string> > createTournament(map<string, vector<string> > args_and_values);
+void printTournamentBoard(map<string, map<string, string> > tournBaord, map<string, vector<string> > args_and_values);
+vector <string> getRows(map<string, vector<string> > args_and_values);
+vector <string> getColumns(map<string, vector<string> > args_and_values);

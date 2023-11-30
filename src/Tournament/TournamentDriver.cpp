@@ -16,26 +16,13 @@ void testTournament(int argc, char* argv[]) {
 
     //testConsole(argc, argv);
 
+
     cout << "\n\n---------> TEST 2: Tournament Board w/ Empty Shell <---------\n\n\n";
 
     //testBoard(argc, argv);
 
+/*
     cout << "\n\n---------> TEST 3: Play 1 Game <---------\n\n\n";
-
-    // Chose map
-    // Create players vector 
-    //start up phase
-        //command proccessor - changing states manually
-        //loadmap
-        //start state
-    //Enter GameLoop with players and map
-        // add reinformcments runs automatically
-        // issueOrder (not working)
-        // executeOrders (working)
-            //need to keep track of max turns
-                //return draw if max turns reached
-            //need to retutrn winner
-
 
     cout << "...Loading Map of Europe...\n";
     MapLoader* loader = new MapLoader();
@@ -55,6 +42,14 @@ void testTournament(int argc, char* argv[]) {
     string winner = gs->playPhaseTournament(cp, 10);
 
     cout << winner <<"\n";
+*/
+
+    cout << "\n\n---------> TEST 4: Full Tournament <---------\n\n\n";
+
+    cout <<"... Creating a Tournament Reading from Command line ...\n\n";
+
+    testFullTournament(argc, argv);
+
 
 }
 
@@ -462,4 +457,86 @@ vector<Player*> createTwoPlayers(){
     players.push_back(p2);
 
     return players;
+}
+
+void testFullTournament(int argc, char* argv[]) {
+
+    cout << "... Checking arguments in command line ...\n\n";
+    checkConsoleInputTournament(argc, argv);
+   
+    cout << "... Storing argument values in map...\n\n";
+    map<string, vector<string> > args_and_values = collectArgumentsAndValuesFromConsole(argc, argv);
+
+    cout << "... Create tournament board ...\n\n";
+    map<string, map<string, string> > tournBoard = createTournament(args_and_values);
+
+    cout << "... Printing tournament board ...\n\n";
+    printTournamentBoard(tournBoard, args_and_values);
+
+}
+
+map<string, map<string, string> > createTournament(map<string, vector<string> > args_and_values) {
+    
+    map<string, map<string, string> > tournBoard;
+
+    vector<string> rows;
+    vector<string> columns;
+
+    // fill rows with maps
+    rows = getRows(args_and_values);
+
+    // fill columns with game #'s
+    columns = getColumns(args_and_values);
+
+    // fill board
+    for (auto row : rows) {
+        for (auto col : columns) {
+            tournBoard[row][col] = "Empty";
+            //Todo: string playGame(args_and_values)
+        }
+    }
+    
+    return tournBoard;
+}
+
+void printTournamentBoard(map<string, map<string, string> > tournBoard, map<string, vector<string> >  args_and_values) {
+
+    vector<string> rows = getRows(args_and_values);
+    vector<string> columns = getColumns(args_and_values);
+
+    // print first row
+    cout << "| " << setfill(' ') << setw(14) << "| ";
+    for (auto col : columns) {
+        cout << setfill(' ') << setw(12) << col << "| ";
+    }
+    cout << "\n";
+
+    //print every other row
+    for (const auto& row : rows) {
+        cout << "| " << setfill(' ') << setw(12) << row << "| ";
+        for (const auto& col : columns) {
+            cout << setfill(' ') << std::setw(12) << tournBoard[row][col] << "| ";
+        }
+        cout << "\n";
+    }
+}
+
+vector <string> getRows(map<string, vector<string> > args_and_values) {
+    vector<string> rows;
+    // fill rows with maps
+    for (string row : args_and_values["-M"]) {
+        rows.push_back(row);
+    }
+    return rows;
+}
+
+vector <string> getColumns(map<string, vector<string> > args_and_values) {
+    vector<string> columns;
+    // fill columns with game #'s
+    string sGame;
+    for (int i = 0; i < stoi(args_and_values["-G"][0]); i++) {
+        sGame = "Game ";
+        columns.push_back(sGame.append(to_string(i + 1)));
+    }
+    return columns;
 }
