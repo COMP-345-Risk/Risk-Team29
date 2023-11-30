@@ -3,6 +3,7 @@
 #include "../CommandProcessing/CommandProcessing.h"
 #include "../CardsDeck/Cards.h"
 #include "../OrdersList/Orders.h"
+#include "../Player/Player.h"
 
 void testTournament(int argc, char* argv[]); //A3
 

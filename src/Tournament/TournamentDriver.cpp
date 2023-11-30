@@ -36,8 +36,6 @@ void testTournament(int argc, char* argv[]) {
                 //return draw if max turns reached
             //need to retutrn winner
 
-    //make function tournamentGame return name of winner
-    //make function tournament creates all tournament games and fills tournament board
 
     cout << "...Loading Map of Europe...\n";
     MapLoader* loader = new MapLoader();
@@ -54,7 +52,9 @@ void testTournament(int argc, char* argv[]) {
 
     gs->startupPhaseTournament(cp);
 
-    gs->playPhaseTournament(cp);
+    string winner = gs->playPhaseTournament(cp, 10);
+
+    cout << winner <<"\n";
 
 }
 
@@ -445,10 +445,9 @@ vector<Player*> createTwoPlayers(){
     vector<Territory*> t1;
     Hand* h1 = new Hand();
     OrdersList* pOL1 = new OrdersList();
-
     State* pState1 = new State("start");
 
-    Player* p1 = new Player(t1, h1, pOL1, 1, pState1); // 1 is id
+    Player* p1 = new Player(t1, h1, pOL1, 1, pState1, "Lara", new Human()); // 1 is id
 
     vector<Territory*> t2;
     Hand* h2 = new Hand();
@@ -456,7 +455,7 @@ vector<Player*> createTwoPlayers(){
 
     State* pState2 = new State("start");
 
-    Player* p2 = new Player(t2, h2, pOL2, 2, pState2); // 1 is id
+    Player* p2 = new Player(t2, h2, pOL2, 2, pState2, "eyal", new Human()); // 1 is id
 
     vector<Player*> players;
     players.push_back(p1);

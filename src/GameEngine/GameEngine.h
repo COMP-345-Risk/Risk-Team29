@@ -149,7 +149,9 @@ public:
     //********* A3 *************
     void startupPhaseTournament(CommandProcessor* processor);
 
-    Player* playPhaseTournament(CommandProcessor* processor);
+    string playPhaseTournament(CommandProcessor* processor, int maxTurns);
+
+    bool hasWinner();
 
 
 private:
