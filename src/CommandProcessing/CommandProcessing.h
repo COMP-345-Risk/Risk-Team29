@@ -38,6 +38,8 @@ public:
 
     string getName();
 
+    void setName(string n);
+
     string getParam(); // certain commands like "loadmap" and "addplayer" have a second paramater after them
 
     /**

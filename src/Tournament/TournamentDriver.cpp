@@ -14,15 +14,47 @@ void testTournament(int argc, char* argv[]) {
 
     cout << "\n\n---------> TEST 1: Test Console Input <---------\n\n\n";
 
-    testConsole(argc, argv);
+    //testConsole(argc, argv);
 
-    cout << "\n\n---------> TEST 2: Tournament Board <---------\n\n\n";
+    cout << "\n\n---------> TEST 2: Tournament Board w/ Empty Shell <---------\n\n\n";
 
-    testBoard(argc, argv);
+    //testBoard(argc, argv);
 
-    cout << "\n\n---------> TEST 3: Player vs. Player <---------\n\n\n";
+    cout << "\n\n---------> TEST 3: Play 1 Game <---------\n\n\n";
 
-    
+    // Chose map
+    // Create players vector 
+    //start up phase
+        //command proccessor - changing states manually
+        //loadmap
+        //start state
+    //Enter GameLoop with players and map
+        // add reinformcments runs automatically
+        // issueOrder (not working)
+        // executeOrders (working)
+            //need to keep track of max turns
+                //return draw if max turns reached
+            //need to retutrn winner
+
+    //make function tournamentGame return name of winner
+    //make function tournament creates all tournament games and fills tournament board
+
+    cout << "...Loading Map of Europe...\n";
+    MapLoader* loader = new MapLoader();
+    Map* map1 = loader->loadMap("Map/MapFolder/Europe.map");
+    map1->validate();
+
+    cout << "...Creating player vector with 2 players...\n";
+    vector <Player*> players = createTwoPlayers();
+
+    cout << "... Creating Command Proccesser ... \n\n";
+    CommandProcessor* cp = new CommandProcessor();
+
+    GameEngine* gs = new GameEngine(map1,players);
+
+    gs->startupPhaseTournament(cp);
+
+    gs->playPhaseTournament(cp);
 
 }
 
@@ -133,7 +165,7 @@ void testConsole(int argc, char* argv[]){
  * -G <numberofgames> has one value between 1-5
  * -D <maxnumberofturns> has one value between 10-50
  */
-void checkConsoleInputTournament(int argc, char* argv[]) {
+bool checkConsoleInputTournament(int argc, char* argv[]) {
     // check if console argument "tournament" is valid
     if (checkIfInsideConsoleIsTournamentMode(argc, argv)) {
         cout << "...Inside Tournament Mode ...\n\n";
@@ -141,31 +173,30 @@ void checkConsoleInputTournament(int argc, char* argv[]) {
     else {
         cerr << "... Console argument \"tournament\" is incorrect or does not exist  ...\n"
             << "... Exiting checkConsoleInputTournament() ...\n\n";
-        return;
+        return false;
     }
 
     // collect arguments and values into a map data type
-    map<string, vector<string> > args_and_values
-        = collectArgumentsAndValuesFromConsole(argc, argv);
+    map<string, vector<string> > args_and_values = collectArgumentsAndValuesFromConsole(argc, argv);
 
-    //check all arguments are present
+    //check all arguments are PRESENT
     if (checkIfAllArgumentsArePresent(args_and_values)) {
         cout << "... All arguments are present ...\n\n";
     }
     else {
         cerr << "... One of the arguments is missing ...\n\n"
             << "... Exiting checkConsoleInputTournament() ...\n\n";
-        return;
+        return false;
     }
 
-    //check if arguments are valid (-M, -P, -G, or -D)
+    //check if arguments are VALID (-M, -P, -G, or -D)
     if (checkIfArgumentsAreValid(args_and_values)) {
         cout << "... All arguments syntax are valid ...\n\n";
     }
     else {
         cerr << "... Error: one of the arguments syntax is invalid ...\n"
             << "... Exiting checkConsoleInputTournament() ...\n\n";
-        return;
+        return false;
     }
 
     // check -M has 1-5 different maps
@@ -173,19 +204,19 @@ void checkConsoleInputTournament(int argc, char* argv[]) {
     if (!uniqueValues(args_and_values["-M"])) {
         cerr << "... Error: there are repeating maps ...\n"
             << "... Exiting checkConsoleInputTournament() ....\n\n";
-        return;
+        return false;
     }
     if (numMaps < 1 || numMaps > 5) { // must be between 1-5
         cerr << "... Error: the number of maps is too large ...\n"
             << "... Exiting checkConsoleInputTournament() ....\n\n";
-        return;
+        return false;
     }
     for (const auto& v : args_and_values["-M"]) {
         if (!(v.compare("Africa") == 0 || v.compare("cliff") == 0 || v.compare("Europe") == 0 ||
             v.compare("solarSystem") == 0 || v.compare("World") == 0)) {
             cerr << "... Error: one of the maps are invalid ...\n"
                 << "... Exiting checkConsoleInputTournament() ....\n\n";
-            return;
+            return false;
         }
     }
 
@@ -194,19 +225,19 @@ void checkConsoleInputTournament(int argc, char* argv[]) {
     if (!uniqueValues(args_and_values["-P"])) {
         cerr << "... Error: there are repeating player stratagies ...\n"
             << "... Exiting checkConsoleInputTournament() ....\n\n";
-        return;
+        return false;
     }
     if (numStrat < 2 || numStrat > 4) { // must be between 1-5
         cerr << "... Error: the number of player stratagies is too large ...\n"
             << "... Exiting checkConsoleInputTournament() ....\n\n";
-        return;
+        return false;
     }
     for (const auto& v : args_and_values["-P"]) {
         if (!(v.compare("Aggressive") == 0 || v.compare("Benevolent") == 0 ||
             v.compare("Neutral") == 0 || v.compare("Cheater") == 0)) {
             cerr << "... Error: one of the player stratagies are invalid ...\n"
                 << "... Exiting checkConsoleInputTournament() ....\n\n";
-            return;
+            return false;
         }
     }
 
@@ -214,26 +245,26 @@ void checkConsoleInputTournament(int argc, char* argv[]) {
     if (args_and_values["-G"].size() > 1) {
         cerr << "... Error: number of games can only have 1 value ...\n"
             << "... Exiting checkConsoleInputTournament() ....\n\n";
-        return;
+        return false;
     }
     int numGames = stoi(args_and_values["-G"][0]);
     if (numGames < 1 || numGames > 5) { // must be between 1-5
         cerr << "... Error: the number of games is too large ...\n"
             << "... Exiting checkConsoleInputTournament() ....\n\n";
-        return;
+        return false;
     }
 
     // check number turns has one value between 10-50
     if (args_and_values["-D"].size() > 1) {
         cerr << "... Error: number of turns can only have 1 value ...\n"
             << "... Exiting checkConsoleInputTournament() ....\n\n";
-        return;
+        return false;
     }
     int numTurns = stoi(args_and_values["-D"][0]);
     if (numTurns < 10 || numTurns > 50) { // must be between 1-5
         cerr << "... Error: the number of turns is too large or small ...\n"
             << "... Exiting checkConsoleInputTournament() ....\n\n";
-        return;
+        return false;
     }
 
     // Display arguments and values
@@ -247,6 +278,7 @@ void checkConsoleInputTournament(int argc, char* argv[]) {
         cout << "\n";
     }
 
+    return true;
 }
 
 /**
@@ -407,4 +439,28 @@ void testBoard(int argc, char* argv[]) {
         }
         cout << "\n";
     }
+}
+
+vector<Player*> createTwoPlayers(){
+    vector<Territory*> t1;
+    Hand* h1 = new Hand();
+    OrdersList* pOL1 = new OrdersList();
+
+    State* pState1 = new State("start");
+
+    Player* p1 = new Player(t1, h1, pOL1, 1, pState1); // 1 is id
+
+    vector<Territory*> t2;
+    Hand* h2 = new Hand();
+    OrdersList* pOL2 = new OrdersList();
+
+    State* pState2 = new State("start");
+
+    Player* p2 = new Player(t2, h2, pOL2, 2, pState2); // 1 is id
+
+    vector<Player*> players;
+    players.push_back(p1);
+    players.push_back(p2);
+
+    return players;
 }

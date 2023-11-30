@@ -40,6 +40,8 @@ string Command::getName() {
     return name;
 };
 
+void Command::setName(string n){ this->name = n; }
+
 /**
  * Save the effect of the command
  */

@@ -615,6 +615,99 @@ void GameEngine::transition(string command) {
     notify(this);
 }
 
+/**
+ * @brief Runs through all states in startup phase and sets currentState to assignmentreinforcment
+ * 
+ */
+void GameEngine::startupPhaseTournament(CommandProcessor* cp){
+    
+    // ---------> Step 1: Start State <---------
+    cout << "... In start state ...\n\n";
+    Command* command = new Command("loadmap", "mapName"); //general map name for test purposes
+    bool isValid = cp->validate(command, currentState);
+    if(isValid){
+        currentState->setStateName("maploaded");
+    }else{
+        cout << "... Unable to move to loadmap exiting startupPhaseTournament() ";
+        return; 
+    }
+
+    // ---------> Step 2: loadMap State <---------
+    cout << "... In loadmap state .... \n\n";
+    // map already loaded when created new gameEngine(map,palyers);
+    command->setName("validatemap");
+    isValid = cp->validate(command, currentState);
+    if (isValid) {
+        currentState->setStateName("mapvalidated");
+    }else {
+        cout << "... Unable to move to mapvalidated exiting startupPhaseTournament() ";
+        return;
+    }
+   
+    // ---------> Step 3: loadMap State <---------
+    cout << "... In mapvalidate state .... \n\n";
+    loadedMap->validate();
+    command->setName("addplayer");
+    isValid = cp->validate(command, currentState);
+    if (isValid) {
+        currentState->setStateName("playersadded");
+    }else {
+        cout << "... Unable to move to playersadded exiting startupPhaseTournament() ";
+        return;
+    }
+
+    // ---------> Step 4: players added State <---------
+    cout << "... In playersadded state .... \n\n";
+    // players already added using gameEngine() constructor
+    command->setName("gamestart");
+    isValid = cp->validate(command, currentState);
+    if (isValid) {
+        currentState->setStateName("assignmentreinforcement");
+    }else {
+        cout << "... Unable to move to assignmentreinforcement exiting startupPhaseTournament() ";
+        return;
+    }
+
+    // ---------> Step 5: Distributwe all territories <---------
+    int currentPlayer = 0;
+    for (auto const& territory : loadedMap->getterritories()) {
+        players[currentPlayer]->addTerritory(territory.second);
+        territory.second->setOwnerId(players[currentPlayer]->getID());
+        // round robin the players/territories
+        currentPlayer = (currentPlayer + 1) % (players.size());
+    }
+    cout << "\n .... ✅ Territories Distributed .... \n";
+
+    // ---------> Step 6: Give 50 army units to each player <---------
+    cout << "\n .... Adding 50 army units to each player .... \n";
+    for (Player* p : players) {
+        p->setReinforcement(50);
+    }
+
+    // ---------> Step 5: each player draws 2 cards <---------
+    cout << "\n .... Each player draws 2 cards .... \n";
+    Deck newDeck;
+    newDeck.fillDeck(); // fills up with 15 cards
+    for (Player* p : players) {
+        for (int i = 0; i < 2; ++i) {
+            newDeck.draw(*p->getHand());
+        }
+    };
+    
+    // unncomment to see territories are distributed equally
+    // for (Player* p : players) {
+    //     cout << p;
+    // }
+
+}
+
+/**
+ * @brief Runs through all states in play phase and choses a winner
+ */
+Player* GameEngine::playPhaseTournament(CommandProcessor* processor){
+    
+    return players.at(0); // TODO: temporary
+}
 
 GameEngine& GameEngine::operator=(const GameEngine& other) {
     this->loadedMap = other.loadedMap;

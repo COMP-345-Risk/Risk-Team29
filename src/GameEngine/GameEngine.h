@@ -140,11 +140,16 @@ public:
 
     void executeOrdersPhase();
 
-    void startupPhase(CommandProcessor * command);
+    void startupPhase(CommandProcessor* processor);
     
     void transition(string command);
 
     string stringToLog();
+
+    //********* A3 *************
+    void startupPhaseTournament(CommandProcessor* processor);
+
+    Player* playPhaseTournament(CommandProcessor* processor);
 
 
 private:
