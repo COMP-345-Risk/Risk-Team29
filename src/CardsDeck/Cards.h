@@ -4,6 +4,7 @@
 #include <vector>
 #include "../Player/Player.h"
 #include "../OrdersList/Orders.h"
+#include "../GameEngine/GameEngine.h"
 
 using namespace std;
 
@@ -95,6 +96,11 @@ public:
     * The getDeckSize method retrieves and outputs the size of the deck
     */
     void getDeckSize();
+
+    /**
+    * Returns the vector of cards 
+    */
+    vector<Card*> getDeck();
 
     /**
     * The shuffleDeck method randomizes the order of the cards in a deck

@@ -1,0 +1,9 @@
+[Map]
+author=Laramo
+
+[Continents]
+clifftop=4
+
+[Territories]
+topleft,300,150,clifftop,topleftc
+topleftc,400,130,clifftop,topleft

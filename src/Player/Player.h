@@ -49,6 +49,11 @@ class Player {
    * Param con
    */
   Player(int id);
+  
+  /**
+  * Param con 
+  */
+  Player(int id, PlayerStrategy * ps);
 
   /**
    * Copy Constructor
@@ -87,6 +92,12 @@ class Player {
   Hand* getHand();
 
   string getName();
+
+  void setState(string s);
+
+  void setStrategy(PlayerStrategy* ps);
+
+  PlayerStrategy* getStrategy();
 
   void setName(string n);
 

@@ -3,6 +3,8 @@
 
 #include "../Map/Map.h"
 #include "../Player/Player.h"
+#include "../GameEngine/GameEngine.h"
+
 
 
 // forward declaration

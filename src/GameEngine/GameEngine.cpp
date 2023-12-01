@@ -96,10 +96,16 @@ State* Transition::getNextState() {
 
 
 /************************************************************ Game Engine **************************************************************/
+/************************************************** Global ****************************************************/
+extern vector<Player*> players = vector<Player*>();
+extern Player* neutral = new Player(-1);
+
 
 GameEngine::GameEngine() {
     // set state to start
     currentState = new State("start");
+    this->gameStates = initializeGameStates();
+    neutral->setName("Game Neutral Player");
     // define the default transitions
     gameTransitions = initializeGameTransitionsV2();
 }
@@ -108,12 +114,12 @@ GameEngine::GameEngine() {
 /**
  * Init game engine
 */
-GameEngine::GameEngine(Map* map, vector<Player*> players) {
+GameEngine::GameEngine(Map* map, vector<Player*> p) {
     this->gameStates = initializeGameStates();
     this->currentState = gameStates[0];
     this->gameTransitions = initializeGameTransitionsV2();
     this->loadedMap = map;
-    this->players = players;
+    players = p;
 }
 
 vector<State*> GameEngine::getGameStates() { return gameStates; }
@@ -126,10 +132,28 @@ map<string, map <string, Transition*> > GameEngine::getGameTransitions() { retur
 
 Map* GameEngine::getMap() { return this->loadedMap; }
 
-vector<Player*> GameEngine::getPlayers() { return this->players; }
+vector<Player*> GameEngine::getPlayers() { return players; }
 
 GameEngine::~GameEngine() {
-    // todo delete all the game transitions 
+    for(Player* player: players) {
+        delete player;
+        player = NULL;
+    }
+    for(auto state: gameStates) {
+        delete state;
+        state = NULL;
+    }
+    for(auto transitionsMap: gameTransitions) {
+        for(auto transitionMap: transitionsMap.second) {
+            auto transition = transitionMap.second;
+            delete transition;
+            transition = NULL;
+        }
+    }
+    delete loadedMap;
+    loadedMap = NULL;
+    delete currentState;
+    currentState = NULL;
 }
 
 /**
@@ -142,9 +166,7 @@ void GameEngine::mainGameLoop() {
 
     string inputCommand = "assignreinforcement";
     string previousStateName = "playersadded";
-    int count = 0; // will be removed
-    while (inputCommand.compare("win") != 0 && count < 6) {
-        //TODO: Tried using map "gameTransitions", could not figure it out, will try again in future
+    while (inputCommand.compare("win") != 0) {
         if ((previousStateName.compare("playersadded") == 0 && inputCommand.compare("assignreinforcement") == 0)
             || (previousStateName.compare("executeorders") == 0 && inputCommand.compare("issueorders") == 0)) {
             previousStateName = getGameStates().at(4)->getStateName(); // assignreinforcement
@@ -154,7 +176,7 @@ void GameEngine::mainGameLoop() {
         }
         else if ((previousStateName.compare("assignreinforcement") == 0 && inputCommand.compare("issueorder") == 0)
             || (previousStateName.compare("issueorders") == 0 && inputCommand.compare("issueorder") == 0)) {
-            previousStateName = getGameStates().at(5)->getStateName(); // issueorders
+            previousStateName = "issueorders"; // issueorders
             issueOrdersPhase();
             inputCommand = "issueordersend";
 
@@ -176,11 +198,18 @@ void GameEngine::mainGameLoop() {
             }
             // take the first territory, get the owner and go over the territories to see if they all have the same owner, if yes, end game, else go to reinforcement 
             inputCommand = isAllSameOwner ? "win" : "assignreinforcement";
+            previousStateName = "playersadded";
+            if(isAllSameOwner) {
+                for(Player* player : players) {
+                    if(player->getID() == ownerId) {
+                        cout << "🏆 Player " << player->getName() << " has won the game! Congratz! 🎉\n";
+                    }
+                }
+            }
         }
         else {
-            cout << "Invalid choice.\n";
+            cout << "Invalid choice " << inputCommand << " " << previousStateName << ".\n";
         }
-        count++;
     }
 }
 
@@ -287,6 +316,12 @@ Order* GameEngine::getPlayerInputOrder(Player* p) {
 
 void GameEngine::executeOrdersPhase() {
     // vector of orders and push all the deploy order + execute them
+    // go over all the players and put them in execute state
+    cout << "Changing players to executeOrders turn" << endl;
+        for (Player* player : players) {
+            player->setState("executeorders");
+        }
+    cout << "Players are changed to execute orders" << endl;
     // go over each player
     for (Player* player : players) {
         OrdersList* ol = player->getOrdersList();
@@ -294,8 +329,10 @@ void GameEngine::executeOrdersPhase() {
             // if order type is deploy
             if (o->getOrderName().compare("Deploy") == 0) {
                 //execute them right away
+                cout << "Exceute" << endl;
                 o->execute();
                 ol->remove(o->getOrderID());
+
             }
         }
     }
@@ -520,7 +557,34 @@ void GameEngine::startupPhase(CommandProcessor* processor) {
         isValid = processor->validate(c, currentState);
         //validate the command the user entered, if invalid will break the game
         if (isValid && gameTransitions[currentState->getStateName()].count(c->getName()) > 0) {
-            Player* p = new Player(i);
+            // Choose the Player Strategy
+            cout << "\n Please Select the type of Player " << c->getParam() << " will be\n";
+            cout << "1. Human 🧑\n2.Aggressive 🤖\n3.Benevolent 🤖\n4.Neutral 🤖\n5.Cheater 🤖\n";
+            string strategy;
+            getline(cin, strategy);
+            int strategyNumber = stoi(strategy);
+            PlayerStrategy* ps;
+            switch(strategyNumber) {
+                case 2:
+                    ps = new Aggressive();
+                    break;
+                case 3:
+                    ps = new Benevolant();
+                    break;
+                case 4:
+                    ps = new Neutral();
+                    break;
+                case 5:
+                    ps = new Cheater();
+                    break;
+                case 1:
+                default:
+                    ps = new Human();
+                    break;
+            }
+
+
+            Player* p = new Player(i, ps);
             p->setName(c->getParam());
             players.push_back(p);
             transition(c->getName()); // will go in a loop for playersadded
@@ -621,7 +685,6 @@ GameEngine& GameEngine::operator=(const GameEngine& other) {
     this->currentState = other.currentState;
     this->gameStates = other.gameStates;
     this->gameTransitions = other.gameTransitions;
-    this->players = other.players;
     return *this;
 }
 

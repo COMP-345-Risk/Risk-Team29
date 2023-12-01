@@ -207,10 +207,4 @@ void testMainGameLoop(){
     cout << "\n\n---------> Test issueOrdersPhase() <---------\n\n\n";
 
     ge->issueOrdersPhase();
-
-
-    
-
-
-
 }

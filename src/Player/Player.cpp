@@ -49,6 +49,18 @@ void Player::printTerritories(vector<Territory*> territories) {
   }
 }
 
+void Player::setState(string s){
+  state->setStateName(s);
+}
+
+void Player::setStrategy(PlayerStrategy* ps){
+  this->ps = ps;
+}
+
+PlayerStrategy* Player::getStrategy(){
+  return ps;
+}
+
 /**
  * Copy Constructor
  */
@@ -111,6 +123,8 @@ Player::~Player() {
 Player::Player() {
   hand = new Hand();
   reinforcements = 0;
+  orderList = new OrdersList();
+  state = new State();
   // strategy will be human by default
   ps = new Human();
 };
@@ -119,6 +133,11 @@ Player::Player() {
  * Param Constructor
  */
 Player::Player(int i) : Player() { id = i; };
+
+/**
+* Param con 
+*/
+Player::Player(int i, PlayerStrategy * strategy) : Player() { id = i; ps = strategy; };
 
 int Player::getID() { return this->id; }
 
