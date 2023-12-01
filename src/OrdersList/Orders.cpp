@@ -98,8 +98,8 @@ bool Order::pOwnsTerr(Player* p, Territory* t){
 
 bool Order::terrIsAdjP(Territory *t1, Territory *t2){
     for (auto adj : t1->getAdjacencyList()) {
-        // true: if valid and territory name matches name in players list territories
-        if (adj->getName().compare(t2->getName()) == 0) {
+        // true: if valid and territory id matches id in players list territories
+        if (adj->getId() == t2->getId()) {
             return true;
         }
     }
@@ -278,6 +278,7 @@ void Advance::execute(State* current) {
  */
 void Advance::execute() {
     if(!pIsInExecuteState(p,getOrderName())){ return; } // player is NOT in execute order state
+    this->validate();
     if(this->getValid()){ // advance is valid
         notify(this);
         if(pOwnsTerr(p,this->terrTarget)){ // player owns target
@@ -293,6 +294,18 @@ void Advance::execute() {
                 << terrTarget->getName() <<" has army of " << this->terrTarget->getArmyCount() << "\n";
         
         } else if (!pOwnsTerr(p, this->terrTarget)) { // player does not own target
+            // If the attacked player was a Neutral one, then they should become aggressive
+            for(Player* player: players) {
+                if(player->getID() == this->terrTarget->getOwnerId()) {
+                    auto strategy = player->getStrategy();
+                    if(dynamic_cast<Neutral*>(strategy)){
+                        cout << "\nNeutral Player " << player->getName() << " is now an Aggressive Player\n";
+                        delete strategy; // removed the Neutral strat
+                        player->setStrategy(new Aggressive());
+                    }
+                }
+            }
+
             int winner = battle();
             cout << "...The battle has ended printing both Terriories after battle...\n"
                 << terrSource
@@ -392,7 +405,7 @@ string Advance::givePLayerNewCard() {
     if(r == 3)
         cardName = "Airlift";
     if(r == 4)
-        cardName = "Deplomacy";
+        cardName = "Diplomacy";
     
     Card* c = new Card(cardName);
     p->getHand()->addCard(c);
@@ -833,6 +846,7 @@ OrdersList::~OrdersList(){
 void OrdersList::addOrder(Order *o){
     OL->push_back(o);
     notify(this);
+
 }
 /**
  * Overload the stringtoLog method to log the orderList 

@@ -54,6 +54,7 @@ private:
     int continentId;
     int ownerId;
     int armyCount;
+    int pendingArmyCount;
     vector<Territory*> adjacencyList;
     friend ostream& operator << (ostream& out, Territory* t); // overide Stream insertion operator
     
@@ -80,11 +81,17 @@ public:
 
     int getArmyCount() const;
 
+    int getTotalArmyCount() const;
+
     void setArmyCount(int newCount);
 
     void addToArmyCount(int x);
 
     void subFromArmy(int x);
+
+    void addToPendingArmyCount(int x);
+
+    void resetPendingArmies();
 
     // Getter for adjacencyList
     vector<Territory*> getAdjacencyList();
@@ -135,7 +142,6 @@ public:
 
     void addTerritory(Territory*);
 
-    //TODO:
     map<int, Continent*> getContinents();
 
     Continent* getContinent(int id);

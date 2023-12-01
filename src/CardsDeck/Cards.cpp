@@ -97,8 +97,7 @@ Order* Card::play(Player* player) {
         string userInput;
         getline(cin, userInput);
         int destinationTerritory = stoi(userInput);
-        // todo make neutralPlayer just be no player (can we do this?)
-        Order *order = new Blockade(player,player,canDefend.at(destinationTerritory));
+        Order *order = new Blockade(player, neutral, canDefend.at(destinationTerritory));
         return order;
     } else if (type->compare("Airlift") == 0) {
         cout << "Which Territory would you like to Airlift TO?\n";
@@ -113,13 +112,20 @@ Order* Card::play(Player* player) {
         cout << "How many armies would you like to Airlift? (max: " << canDefend.at(fromTerritory)->getArmyCount() << "\n";
         getline(cin, userInput);
         int armiesToLift = stoi(userInput);
-        // todo make neutralPlayer just be no player (can we do this?)
         Order *order = new Airlift(player, canDefend.at(destinationTerritory), canDefend.at(fromTerritory), armiesToLift);
         return order;
     } else if (type->compare("Diplomacy") == 0) {
         cout << "Choose another player to Negotiate with\n";
-        //todo make players static on the GameEngine to be able to access it here.
-        Order *order = new Negotiate(player, player);
+        for(int i = 0; i < players.size(); i++) {
+            if(players.at(i)->getID() != player->getID()) {
+                cout << i << "." << player->getName() << "\n";
+            }
+        }
+        string userInput;
+        getline(cin, userInput);
+        int playerTo = stoi(userInput);
+
+        Order *order = new Negotiate(player, players.at(playerTo));
         return order;
     } else {
         cout << "Invalid card type: " << type << "\n";
@@ -218,6 +224,13 @@ void Deck::printDeck() {
 */
 void Deck::getDeckSize() {
     cout << "The Deck contains " << deck.size() << " cards.\n";
+}
+
+/**
+* The getDeckSize method retrieves and outputs the size of the deck
+*/
+vector<Card*> Deck::getDeck() {
+    return deck;
 }
 
 /**

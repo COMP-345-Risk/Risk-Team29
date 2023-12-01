@@ -91,6 +91,9 @@ private:
 };
 
 /************************************************************ Game Engine **************************************************************/
+/************************************************** Global ****************************************************/
+extern vector<Player*> players;
+extern Player* neutral;
 class GameEngine : public Subject, public ILoggable  {
 public:
     GameEngine();
@@ -159,7 +162,6 @@ private:
     State* currentState; // current state of the player
     map<string, map<string, Transition*>> gameTransitions;
     Map* loadedMap;
-    vector<Player*> players;
     friend ostream& operator<<(ostream& out, GameEngine* ge);  // overide Stream insertion operator
 };
 
