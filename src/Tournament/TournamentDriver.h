@@ -26,5 +26,8 @@ vector<Player*> createTwoPlayers();
 void testFullTournament(int argc, char* argv[]);
 map<string, map<string, string> > createTournament(map<string, vector<string> > args_and_values);
 void printTournamentBoard(map<string, map<string, string> > tournBaord, map<string, vector<string> > args_and_values);
+string playGame(map<string, vector<string> > args_and_values, string mapName);
 vector <string> getRows(map<string, vector<string> > args_and_values);
 vector <string> getColumns(map<string, vector<string> > args_and_values);
+vector<Player*> createPlayers(map<string, vector<string> > args_and_values);
+PlayerStrategy* createPlayerStratagyObject(string ps);

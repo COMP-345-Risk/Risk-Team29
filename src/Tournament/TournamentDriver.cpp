@@ -4,7 +4,7 @@
  * @brief runs tournaments based on following console inputs
  * tournament
  * -M <listofmapfiles>  Ex: -M Africa Europe solarSystem
- * -P <listofplayerstrategies>  Ex: -P Aggressive Benevolent Neutral Cheater
+ * -P <listofplayerstrategies>  Ex: -P Aggressive Benevolant Neutral Cheater
  * -G <numberofgames> Ex: -G 2
  * -D <maxnumberofturns> Ex: -D 10
  */
@@ -21,9 +21,9 @@ void testTournament(int argc, char* argv[]) {
 
     //testBoard(argc, argv);
 
-/*
-    cout << "\n\n---------> TEST 3: Play 1 Game <---------\n\n\n";
 
+    cout << "\n\n---------> TEST 3: Play 1 Game <---------\n\n\n";
+/*
     cout << "...Loading Map of Europe...\n";
     MapLoader* loader = new MapLoader();
     Map* map1 = loader->loadMap("Map/MapFolder/Europe.map");
@@ -39,14 +39,17 @@ void testTournament(int argc, char* argv[]) {
 
     gs->startupPhaseTournament(cp);
 
+    // //set all owners to player 1 to test hasWinner()
+    // for(auto t : gs->getMap()->getterritories()){
+    //     t.second->setOwnerId(1);
+    // }
+
     string winner = gs->playPhaseTournament(cp, 10);
 
-    cout << winner <<"\n";
+    cout <<"The winner is: "<< winner <<"\n";
 */
 
     cout << "\n\n---------> TEST 4: Full Tournament <---------\n\n\n";
-
-    cout <<"... Creating a Tournament Reading from Command line ...\n\n";
 
     testFullTournament(argc, argv);
 
@@ -70,7 +73,7 @@ void testConsole(int argc, char* argv[]){
     char runCommand[] = "Users/.../ ";
     char tournament[] = "tournament";
     char optionM[] = "-M", Africa[] = "Africa", Europe[] = "Europe", solarSystem[] = "solarSystem", Europe2[] = "Europe";
-    char optionP[] = "-P", Aggressive[] = "Aggressive", Benevolent[] = "Benevolent", Neutral[] = "Neutral", Cheater[] = "Cheater";
+    char optionP[] = "-P", Aggressive[] = "Aggressive", Benevolant[] = "Benevolant", Neutral[] = "Neutral", Cheater[] = "Cheater";
     char optionG[] = "-G", number2[] = "2";
     char optionD[] = "-D", number10[] = "10";
 
@@ -78,7 +81,7 @@ void testConsole(int argc, char* argv[]){
         runCommand,
         tournament,
         optionM, Africa, Europe, solarSystem, Europe2,
-        optionP, Aggressive, Benevolent, Neutral, Cheater,
+        optionP, Aggressive, Benevolant, Neutral, Cheater,
         optionG, number2,
         optionD, number10,
         nullptr
@@ -105,7 +108,7 @@ void testConsole(int argc, char* argv[]){
         runCommand,
         tournament,
         optionM, Africa, Europe, solarSystem,
-        optionP, Aggressive, Benevolent, Neutral, Cheater3,
+        optionP, Aggressive, Benevolant, Neutral, Cheater3,
         optionG, number2,
         optionD, number10,
         nullptr
@@ -132,7 +135,7 @@ void testConsole(int argc, char* argv[]){
         runCommand,
         tournament,
         optionM, Africa, Europe, solarSystem,
-        optionP, Aggressive, Benevolent, Neutral, Cheater,
+        optionP, Aggressive, Benevolant, Neutral, Cheater,
         optionG, number20,
         optionD, number10,
         nullptr
@@ -228,7 +231,7 @@ bool checkConsoleInputTournament(int argc, char* argv[]) {
         return false;
     }
     for (const auto& v : args_and_values["-P"]) {
-        if (!(v.compare("Aggressive") == 0 || v.compare("Benevolent") == 0 ||
+        if (!(v.compare("Aggressive") == 0 || v.compare("Benevolant") == 0 ||
             v.compare("Neutral") == 0 || v.compare("Cheater") == 0)) {
             cerr << "... Error: one of the player stratagies are invalid ...\n"
                 << "... Exiting checkConsoleInputTournament() ....\n\n";
@@ -461,6 +464,8 @@ vector<Player*> createTwoPlayers(){
 
 void testFullTournament(int argc, char* argv[]) {
 
+    cout << "... Creating a Tournament Reading from Command line ...\n\n";
+
     cout << "... Checking arguments in command line ...\n\n";
     checkConsoleInputTournament(argc, argv);
    
@@ -489,10 +494,9 @@ map<string, map<string, string> > createTournament(map<string, vector<string> > 
     columns = getColumns(args_and_values);
 
     // fill board
-    for (auto row : rows) {
+    for (auto mapName : rows) {
         for (auto col : columns) {
-            tournBoard[row][col] = "Empty";
-            //Todo: string playGame(args_and_values)
+            tournBoard[mapName][col] = playGame(args_and_values, mapName);
         }
     }
     
@@ -521,6 +525,37 @@ void printTournamentBoard(map<string, map<string, string> > tournBoard, map<stri
     }
 }
 
+string playGame(map<string, vector<string> > args_and_values, string mapName) {
+
+    cout << "...Loading Map of Europe...\n";
+    MapLoader* loader = new MapLoader();
+    string source = "Map/MapFolder/";
+    source = source.append(mapName);
+    source = source.append(".map");
+    Map* map = loader->loadMap(source);
+    map->validate();
+
+    cout << "...Creating player vector with number of players...\n";
+    vector <Player*> players = createPlayers(args_and_values);
+
+    cout << "... Creating Command Proccesser ... \n\n";
+    CommandProcessor* cp = new CommandProcessor();
+
+    GameEngine* gs = new GameEngine(map, players);
+
+    gs->startupPhaseTournament(cp);
+
+    // //TODO: Remove this for actual Winner
+    // for(auto t : gs->getMap()->getterritories()){
+    //     t.second->setOwnerId(1);
+    // }
+
+    string winner = gs->playPhaseTournament(cp, 10);
+
+    return winner;
+    
+}
+
 vector <string> getRows(map<string, vector<string> > args_and_values) {
     vector<string> rows;
     // fill rows with maps
@@ -539,4 +574,38 @@ vector <string> getColumns(map<string, vector<string> > args_and_values) {
         columns.push_back(sGame.append(to_string(i + 1)));
     }
     return columns;
+}
+
+vector<Player*> createPlayers(map<string, vector<string> > args_and_values){
+    
+    vector<Player*> players;
+    vector<string> playerStragies = args_and_values["-P"];
+    int count = 1;
+    for (string ps: playerStragies) {
+        PlayerStrategy* psTemp = createPlayerStratagyObject(ps);
+        players.push_back(new Player(new Hand(), new OrdersList(), count, new State("start"), ps, psTemp));
+        count++;
+    }
+
+    return players;
+}
+
+PlayerStrategy* createPlayerStratagyObject(string ps) {
+    PlayerStrategy* psObject;
+    if (ps.compare("Aggressive") == 0) {
+        psObject = new Aggressive();
+    }
+    else if (ps.compare("Benevolant") == 0) {
+        psObject = new Benevolant();
+
+    }
+    else if (ps.compare("Neutral") == 0) {
+        psObject = new Neutral();
+    }
+    else if (ps.compare("Cheater") == 0) {
+        psObject = new Cheater();
+    }else{
+        psObject = new Human();
+    }
+    return psObject;
 }

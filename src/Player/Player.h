@@ -39,6 +39,8 @@ class Player {
   
   Player(vector<Territory*>, Hand*, OrdersList*, int id, State*, string name, PlayerStrategy* ps);
 
+  Player(Hand*, OrdersList*, int id, State*, string name, PlayerStrategy* ps);
+
   Player(vector<Territory*>, Hand*, OrdersList*, int id, State*);
 
   /**
