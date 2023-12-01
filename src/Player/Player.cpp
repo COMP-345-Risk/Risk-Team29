@@ -19,6 +19,36 @@ Player::Player(vector<Territory*> t, Hand* h, OrdersList* o, int id, State* s, P
   srand((unsigned)time(NULL));
 }
 
+Player::Player(vector<Territory*> t, Hand* h, OrdersList* o, int id, State* s, string name, PlayerStrategy* ps) {
+  territories = t;
+  hand = h;
+  orderList = o;
+  this->id = id;
+  state = s;
+  this->name = name;
+  reinforcements = 0;
+  this->ps = ps;
+
+  // if seed is set to 1, the generator is reinitialized to its initial value
+  // and produces the same values as before any call to rand or srand
+  srand((unsigned)time(NULL));
+}
+
+Player::Player(Hand* h, OrdersList* o, int id, State* s, string name, PlayerStrategy* ps) {
+  hand = h;
+  orderList = o;
+  this->id = id;
+  state = s;
+  this->name = name;
+  reinforcements = 0;
+  this->ps = ps;
+
+  // if seed is set to 1, the generator is reinitialized to its initial value
+  // and produces the same values as before any call to rand or srand
+  srand((unsigned)time(NULL));
+}
+
+
 Player::Player(vector<Territory*> t, Hand* h, OrdersList* o, int id, State* s) {
   territories = t;
   hand = h;

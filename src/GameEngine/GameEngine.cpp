@@ -679,7 +679,6 @@ void GameEngine::transition(string command) {
     notify(this);
 }
 
-
 GameEngine& GameEngine::operator=(const GameEngine& other) {
     this->loadedMap = other.loadedMap;
     this->currentState = other.currentState;
@@ -694,3 +693,161 @@ GameEngine& GameEngine::operator=(const GameEngine& other) {
 string GameEngine::stringToLog() {
     return "\n\n----------------------------------------- Logger -----------------------------------------\n\nChange of current state to: " + currentState->getStateName() + "\n\n------------------------------------------------------------------------------------------\n\n";
 };
+
+
+/**
+ * @brief Runs through all states in startup phase and sets currentState to playersadded
+ *
+ */
+void GameEngine::startupPhaseTournament(CommandProcessor* cp) {
+
+    // ---------> Step 1: Start State <---------
+    cout << "... In start state ...\n\n";
+    Command* command = new Command("loadmap", "mapName"); //general map name for test purposes
+    bool isValid = cp->validate(command, currentState);
+    if (isValid) {
+        currentState->setStateName("maploaded");
+    }
+    else {
+        cout << "... Unable to move to loadmap exiting startupPhaseTournament() ";
+        return;
+    }
+
+    // ---------> Step 2: loadMap State <---------
+    cout << "... In loadmap state .... \n\n";
+    // map already loaded when created new gameEngine(map,palyers);
+    command->setName("validatemap");
+    isValid = cp->validate(command, currentState);
+    if (isValid) {
+        currentState->setStateName("mapvalidated");
+    }
+    else {
+        cout << "... Unable to move to mapvalidated exiting startupPhaseTournament() ";
+        return;
+    }
+
+    // ---------> Step 3: loadMap State <---------
+    cout << "... In mapvalidate state .... \n\n";
+    loadedMap->validate();
+    command->setName("addplayer");
+    isValid = cp->validate(command, currentState);
+    if (isValid) {
+        currentState->setStateName("playersadded");
+    }
+    else {
+        cout << "... Unable to move to playersadded exiting startupPhaseTournament() ";
+        return;
+    }
+
+    // ---------> Step 4: players added State <---------
+    cout << "... In playersadded state .... \n\n";
+    // players already added using gameEngine() constructor
+
+    // ---------> Step 5: Distributwe all territories <---------
+    int currentPlayer = 0;
+    for (auto const& territory : loadedMap->getterritories()) {
+        players[currentPlayer]->addTerritory(territory.second);
+        territory.second->setOwnerId(players[currentPlayer]->getID());
+        // round robin the players/territories
+        currentPlayer = (currentPlayer + 1) % (players.size());
+    }
+    cout << "\n .... ✅ Territories Distributed .... \n";
+
+    // ---------> Step 6: Give 50 army units to each player <---------
+    cout << "\n .... Adding 50 army units to each player .... \n";
+    for (Player* p : players) {
+        p->setReinforcement(50);
+    }
+
+    // ---------> Step 5: each player draws 2 cards <---------
+    cout << "\n .... Each player draws 2 cards .... \n\n";
+    Deck newDeck;
+    newDeck.fillDeck(); // fills up with 15 cards
+    for (Player* p : players) {
+        for (int i = 0; i < 2; ++i) {
+            newDeck.draw(*p->getHand());
+        }
+    };
+
+    // unncomment to see territories are distributed equally
+    // for (Player* p : players) {
+    //     cout << p;
+    // }
+
+}
+
+/**
+ * @brief Runs through all states in play phase and choses a winner
+ */
+string GameEngine::playPhaseTournament(CommandProcessor* processor, int maxTurns) {
+
+    string inputCommand = "assignreinforcement";
+    string previousStateName = currentState->getStateName(); // playersadded
+    int count = 1; // will be removed
+    int winnerID;
+    while (inputCommand.compare("win") != 0) {
+        //TODO: Tried using map "gameTransitions", could not figure it out, will try again in future
+        if ((previousStateName.compare("playersadded") == 0 && inputCommand.compare("assignreinforcement") == 0)
+            || (previousStateName.compare("executeorders") == 0 && inputCommand.compare("issueorders") == 0)) {
+            previousStateName = getGameStates().at(4)->getStateName(); // assignreinforcement
+            reinforcementPhase();
+            inputCommand = "issueorder";
+
+        }
+        else if ((previousStateName.compare("assignreinforcement") == 0 && inputCommand.compare("issueorder") == 0)
+            || (previousStateName.compare("issueorders") == 0 && inputCommand.compare("issueorder") == 0)) {
+            previousStateName = getGameStates().at(5)->getStateName(); // issueorders
+            //TODO: player stratagy issue orders
+            //issueOrdersPhase();
+            inputCommand = "issueordersend";
+
+        }
+        else if ((previousStateName.compare("issueorders") == 0 && inputCommand.compare("issueordersend") == 0)
+            || (previousStateName.compare("executeorders") == 0 && inputCommand.compare("execorder") == 0)) {
+            previousStateName = getGameStates().at(6)->getStateName(); // executeorders
+            executeOrdersPhase();
+            inputCommand = "assignreinforcement";
+        }
+        else {
+            cout << "Invalid choice.\n";
+        }
+
+        cout << "Turn # " << count << " end." << "\n";
+        if (count >= maxTurns)
+            return "Draw";
+        count++;
+
+        if(hasWinner()){
+            int winnerId = loadedMap->getterritories().begin()->second->getOwnerId();
+            for(auto p: players){
+                if(p->getID() == winnerId)
+                    return p->getName();
+            }
+        }
+    }
+    return "error"; // TODO: temporary
+}
+
+/**
+ * @brief checks if all territories are owned by one player
+ */
+bool GameEngine::hasWinner() {
+
+    map<int, Territory*> territories = loadedMap->getterritories();
+    if (territories.empty()) {
+        cerr <<"... Error: there are no territories ...";
+        return false;
+    }
+
+    int firstOwnerId = territories.begin()->second->getOwnerId();
+
+    // Check if all territories have same ownerId
+    for (const auto& pair : territories) {
+        if (pair.second->getOwnerId() != firstOwnerId || pair.second->getOwnerId()==0) {
+            // If a different ownerId is found or one Territory owner by no one "O", return false
+            return false; 
+        }
+    }
+
+    return true; // All have the same owener
+}

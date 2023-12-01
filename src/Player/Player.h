@@ -37,8 +37,11 @@ class Player {
    */
   Player(vector<Territory*>, Hand*, OrdersList*, int id, State*, PlayerStrategy * ps);
   
-  Player(vector<Territory*>, Hand*, OrdersList*, int id, State*);
+  Player(vector<Territory*>, Hand*, OrdersList*, int id, State*, string name, PlayerStrategy* ps);
 
+  Player(Hand*, OrdersList*, int id, State*, string name, PlayerStrategy* ps);
+
+  Player(vector<Territory*>, Hand*, OrdersList*, int id, State*);
 
   /**
    * Default Constructor

@@ -2,6 +2,8 @@
 #include "../Player/Player.h"
 #include "../Map/Map.h"
 
+#include <iostream>
+
 
 void testGameStates() {
 
@@ -207,4 +209,5 @@ void testMainGameLoop(){
     cout << "\n\n---------> Test issueOrdersPhase() <---------\n\n\n";
 
     ge->issueOrdersPhase();
+
 }
