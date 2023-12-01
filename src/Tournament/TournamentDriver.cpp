@@ -14,16 +14,16 @@ void testTournament(int argc, char* argv[]) {
 
     cout << "\n\n---------> TEST 1: Test Console Input <---------\n\n\n";
 
-    //testConsole(argc, argv);
+    testConsole(argc, argv);
 
 
     cout << "\n\n---------> TEST 2: Tournament Board w/ Empty Shell <---------\n\n\n";
 
-    //testBoard(argc, argv);
+    testBoard(argc, argv);
 
 
     cout << "\n\n---------> TEST 3: Play 1 Game <---------\n\n\n";
-/*
+
     cout << "...Loading Map of Europe...\n";
     MapLoader* loader = new MapLoader();
     Map* map1 = loader->loadMap("Map/MapFolder/Europe.map");
@@ -47,7 +47,7 @@ void testTournament(int argc, char* argv[]) {
     string winner = gs->playPhaseTournament(cp, 10);
 
     cout <<"The winner is: "<< winner <<"\n";
-*/
+
 
     cout << "\n\n---------> TEST 4: Full Tournament <---------\n\n\n";
 
