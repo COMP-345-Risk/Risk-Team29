@@ -1,4 +1,4 @@
-loadmap cliff.map
+loadmap test.map
 validatemap
 addplayer LARA
 addplayer EYAL

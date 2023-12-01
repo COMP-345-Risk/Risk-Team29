@@ -60,7 +60,7 @@ void testLoggingObserver() {
     // test add the order to the player's orderlist 
     Deploy* d = new Deploy(p, territory2, 3);
     // attach modal to view 
-    o->attach(logger);
+     
     p->issueOrder(d); // should call Order::addOrder and notify the observer
 
     // test the save command 

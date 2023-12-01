@@ -91,6 +91,10 @@ int Territory::getArmyCount() const {
     return armyCount;
 }
 
+int Territory::getTotalArmyCount() const {
+    return armyCount + pendingArmyCount;
+}
+
 void Territory::setArmyCount(int newCount){
     this->armyCount = newCount;
 }
@@ -101,6 +105,14 @@ void Territory::addToArmyCount(int x) {
 
 void Territory::subFromArmy(int x){
     this->armyCount = this->armyCount - x;
+}
+
+void Territory::addToPendingArmyCount(int x) {
+    this->pendingArmyCount = this->pendingArmyCount + x;
+}
+
+void Territory::resetPendingArmies(){
+    this->pendingArmyCount = 0;
 }
 
 vector<Territory*> Territory::getAdjacencyList() {
@@ -128,7 +140,7 @@ ostream& operator << (ostream& out, Territory* t)
         << " | ID: " << t->getId()
         << " | ContinentID: " << t->getContinentId()
         << " | Owner: " << t->getOwnerId()
-        << " | Army Count: " << t->getArmyCount() << "\n\n";
+        << " | Army Count: " << t->getTotalArmyCount() << "\n\n";
     return out;
 }
 
