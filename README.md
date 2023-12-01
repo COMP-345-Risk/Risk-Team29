@@ -27,3 +27,8 @@ your file should look like this:
 ....
 }
 ```
+
+# Console input for running tournament tests
+
+tournament -M Africa Europe solarSystem -P  Aggressive Benevolent Neutral Cheater  -G 2 -D 10
+
