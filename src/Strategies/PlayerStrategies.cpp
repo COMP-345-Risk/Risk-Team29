@@ -210,6 +210,9 @@ void Human::issueOrder(Player* p) {
       Card* card = p->getHand()->getCard(cardNum);
       Order* order = card->play(p);
       p->getOrdersList()->addOrder(order);
+      auto deck = p->getHand()->getDeck();
+      deck.erase(remove_if(deck.begin(), deck.end(), [card](Card* c) {return c == card;}));
+      delete card;
       break;
     }
     case 4:
@@ -330,8 +333,12 @@ void Aggressive::issueOrder(Player* p) {
         }
       }
       p->getOrdersList()->addOrder(new Bomb(p, strongestAdjacent));
+      deck.erase(remove_if(deck.begin(), deck.end(), [card](Card* c) {return c == card;}));
+      delete card;
       } else if (type.compare("Reinforcement") == 0) {
           p->getOrdersList()->addOrder(new Deploy(p, canDeploy.at(0), 5));
+          deck.erase(remove_if(deck.begin(), deck.end(), [card](Card* c) {return c == card;}));
+          delete card;
       }
     }
   }
@@ -429,11 +436,14 @@ void Benevolant::issueOrder(Player* p) {
       string type = card->getType();
       if (type.compare("Airlift") == 0) {
         if(reinforce.size() > 1) {
-        Order *order = new Airlift(p, reinforce.at(0), canDeploy.at(0), reinforce.at(0)->getArmyCount()/2);
-
+          Order *order = new Airlift(p, reinforce.at(0), canDeploy.at(0), reinforce.at(0)->getArmyCount()/2);
+          deck.erase(remove_if(deck.begin(), deck.end(), [card](Card* c) {return c == card;}));
+          delete card;
         }
       } else if (type.compare("Reinforcement") == 0) {
           p->getOrdersList()->addOrder(new Deploy(p, canDeploy.at(0), 5));
+          deck.erase(remove_if(deck.begin(), deck.end(), [card](Card* c) {return c == card;}));
+          delete card;
       } 
     }
   }
