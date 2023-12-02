@@ -39,6 +39,6 @@ int main(int argc, char* argv[])
     /*
     * Assignment 3
     */
-    //testPlayerStrategies();
-    testTournament(argc, argv);
+    testPlayerStrategies();
+    // testTournament(argc, argv);
 }

@@ -65,6 +65,7 @@ Territory::Territory(string n, int i, int ci, int a) {
     continentId = ci;
     armyCount = a;
     ownerId = 0;
+    pendingArmyCount = 0;
 }
 
 string Territory::getName() const {

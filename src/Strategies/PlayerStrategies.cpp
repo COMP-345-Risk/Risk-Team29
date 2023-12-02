@@ -258,6 +258,7 @@ vector<Territory*> Human::toAttack(Player* p) {
   p->printTerritories(uniqueCanAttack);
   return uniqueCanAttack;
 }
+
 vector<Territory*> Human::toDefend(Player* p) {
   cout << " ********************** Human to defend **********************\n";
   vector<Territory*> canDefend = p->getTerritories();
@@ -267,15 +268,6 @@ vector<Territory*> Human::toDefend(Player* p) {
     return canDefend;
   }
 
-  // for(Territory *territory: territories) {
-  //   vector<Territory*> adjacencyList = territory->getAdjacencyList();
-  //   for(Territory *adjacent: adjacencyList) {
-  //     // an adjacent territory is owned by another player, this means they can attack this territory
-  //     if(adjacent->getOwnerId() != id) {
-  //       canDefend.push_back(territory);
-  //     }
-  //   }
-  // }
   cout << "\nTerritories to defend:\n -------------------\n";
   std::sort(canDefend.begin(), canDefend.end(), [](Territory* t1, Territory* t2) {
     // Territories with fewer armies should be defended in priority
