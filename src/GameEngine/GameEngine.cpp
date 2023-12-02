@@ -776,17 +776,12 @@ void GameEngine::startupPhaseTournament(CommandProcessor* cp) {
 
 }
 
-/**
- * @brief Runs through all states in play phase and choses a winner
- */
 string GameEngine::playPhaseTournament(CommandProcessor* processor, int maxTurns) {
 
     string inputCommand = "assignreinforcement";
-    string previousStateName = currentState->getStateName(); // playersadded
-    int count = 1; // will be removed
-    int winnerID;
+    string previousStateName = "playersadded";
+    int count = 1;
     while (inputCommand.compare("win") != 0) {
-        //TODO: Tried using map "gameTransitions", could not figure it out, will try again in future
         if ((previousStateName.compare("playersadded") == 0 && inputCommand.compare("assignreinforcement") == 0)
             || (previousStateName.compare("executeorders") == 0 && inputCommand.compare("issueorders") == 0)) {
             previousStateName = getGameStates().at(4)->getStateName(); // assignreinforcement
@@ -796,9 +791,8 @@ string GameEngine::playPhaseTournament(CommandProcessor* processor, int maxTurns
         }
         else if ((previousStateName.compare("assignreinforcement") == 0 && inputCommand.compare("issueorder") == 0)
             || (previousStateName.compare("issueorders") == 0 && inputCommand.compare("issueorder") == 0)) {
-            previousStateName = getGameStates().at(5)->getStateName(); // issueorders
-            //TODO: player stratagy issue orders
-            //issueOrdersPhase();
+            previousStateName = "issueorders"; // issueorders
+            issueOrdersPhase();
             inputCommand = "issueordersend";
 
         }
@@ -806,27 +800,41 @@ string GameEngine::playPhaseTournament(CommandProcessor* processor, int maxTurns
             || (previousStateName.compare("executeorders") == 0 && inputCommand.compare("execorder") == 0)) {
             previousStateName = getGameStates().at(6)->getStateName(); // executeorders
             executeOrdersPhase();
-            inputCommand = "assignreinforcement";
+            map<int, Territory*> territories = loadedMap->getterritories();
+            int ownerId = territories.begin()->second->getOwnerId();
+            bool isAllSameOwner = true;
+            // check if all territories have the same owner id 
+            for (auto const& t : territories) {
+                if (t.second->getOwnerId() != ownerId) {
+                    // if owner isnt the same for at least one territory, no player has won yet
+                    isAllSameOwner = false;
+                    break;
+                }
+            }
+            // take the first territory, get the owner and go over the territories to see if they all have the same owner, if yes, end game, else go to reinforcement 
+            inputCommand = isAllSameOwner ? "win" : "assignreinforcement";
+            previousStateName = "playersadded";
+            if (isAllSameOwner) {
+                for (Player* player : players) {
+                    if (player->getID() == ownerId) {
+                        cout << "🏆 Player " << player->getName() << " has won the game! Congratz! 🎉\n";
+                        return player->getName();
+                    }
+                }
+            }
+
+            cout << "Turn # " << count << " end." << "\n\n";
+            if (count >= maxTurns)
+                return "Draw";
+            count++;
         }
         else {
-            cout << "Invalid choice.\n";
-        }
-
-        cout << "Turn # " << count << " end." << "\n";
-        if (count >= maxTurns)
-            return "Draw";
-        count++;
-
-        if(hasWinner()){
-            int winnerId = loadedMap->getterritories().begin()->second->getOwnerId();
-            for(auto p: players){
-                if(p->getID() == winnerId)
-                    return p->getName();
-            }
+            cout << "Invalid choice " << inputCommand << " " << previousStateName << ".\n";
         }
     }
-    return "error"; // TODO: temporary
+    return "error";
 }
+
 
 /**
  * @brief checks if all territories are owned by one player

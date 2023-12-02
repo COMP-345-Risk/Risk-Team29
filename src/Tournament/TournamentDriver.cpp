@@ -39,12 +39,12 @@ void testTournament(int argc, char* argv[]) {
 
     gs->startupPhaseTournament(cp);
 
-    // //set all owners to player 1 to test hasWinner()
-    // for(auto t : gs->getMap()->getterritories()){
-    //     t.second->setOwnerId(1);
-    // }
+    //set all owners to player 1 to test hasWinner()
+    for(auto t : gs->getMap()->getterritories()){
+        t.second->setOwnerId(1);
+    }
 
-    string winner = gs->playPhaseTournament(cp, 10);
+    string winner = gs->playPhaseTournament(cp, 50);
 
     cout <<"The winner is: "<< winner <<"\n";
 
@@ -445,7 +445,7 @@ vector<Player*> createTwoPlayers(){
     OrdersList* pOL1 = new OrdersList();
     State* pState1 = new State("start");
 
-    Player* p1 = new Player(t1, h1, pOL1, 1, pState1, "Lara", new Human()); // 1 is id
+    Player* p1 = new Player(t1, h1, pOL1, 1, pState1, "Lara", new Aggressive()); // 1 is id
 
     vector<Territory*> t2;
     Hand* h2 = new Hand();
@@ -453,7 +453,7 @@ vector<Player*> createTwoPlayers(){
 
     State* pState2 = new State("start");
 
-    Player* p2 = new Player(t2, h2, pOL2, 2, pState2, "eyal", new Human()); // 1 is id
+    Player* p2 = new Player(t2, h2, pOL2, 2, pState2, "eyal", new Benevolant()); // 1 is id
 
     vector<Player*> players;
     players.push_back(p1);
@@ -550,7 +550,8 @@ string playGame(map<string, vector<string> > args_and_values, string mapName) {
     //     t.second->setOwnerId(1);
     // }
 
-    string winner = gs->playPhaseTournament(cp, 10);
+    int numTurns = stoi(args_and_values["-D"][0]);
+    string winner = gs->playPhaseTournament(cp, numTurns);
 
     return winner;
     
